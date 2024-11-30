@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>订单核对 - 趣玩星球</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #F7F7F7;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 15px;
+        }
+
+        .order-info {
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+        }
+
+        .order-header {
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 18px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .info-label {
+            color: #666;
+        }
+
+        .info-value {
+            color: #333;
+            font-weight: 500;
+            text-align: right;
+        }
+
+        .order-id {
+            font-family: monospace;
+            letter-spacing: 1px;
+            font-weight: bold;
+        }
+
+        #modalService {
+            color: #1890ff !important;
+        }
+
+        .price-value {
+            color: #ff4d4f !important;
+            font-weight: bold;
+        }
+
+        .agreement-section {
+            background: #fff;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 80px;
+        }
+
+        .agreement-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .agreement-checkbox input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+        }
+
+        .agreement-links {
+            color: #1890ff;
+            text-decoration: underline;
+        }
+
+        .confirm-btn {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: calc(100% - 30px);
+            max-width: 570px;
+            height: 44px;
+            background: linear-gradient(to right, #FA9E3B, #ED4014);
+            border: none;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .confirm-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="order-info">
+            <div class="order-header">订单核对</div>
+            <div class="info-item">
+                <span class="info-label">订单号</span>
+                <span class="info-value order-id" id="orderId"></span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">预订人姓名</span>
+                <span class="info-value" id="customerName"></span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">预订人手机</span>
+                <span class="info-value" id="customerPhone"></span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">陪玩昵称</span>
+                <span class="info-value" id="playerName"></span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">陪玩工号</span>
+                <span class="info-value" id="playerId"></span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">陪玩项目</span>
+                <span class="info-value" id="modalService"></span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">目的地</span>
+                <span class="info-value" id="destination"></span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">出行日期</span>
+                <span class="info-value" id="travelDate"></span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">出行时间</span>
+                <span class="info-value" id="travelTime"></span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">服务时长</span>
+                <span class="info-value" id="serviceDuration"></span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">价格</span>
+                <span class="info-value price-value" id="totalPrice"></span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">身份证号码</span>
+                <span class="info-value" id="idNumber"></span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">服务场所</span>
+                <span class="info-value" id="venueName"></span>
+            </div>
+        </div>
+
+        <div class="agreement-section">
+            <label class="agreement-checkbox">
+                <input type="checkbox" id="agreementCheckbox" onchange="toggleConfirmButton()">
+                <span>我已仔细阅读并同意<a href="order-notice.html" class="agreement-links">《陪玩下单须知》</a>及<a href="play-notice.html" class="agreement-links">《陪玩注意事项》</a></span>
+            </label>
+        </div>
+
+        <button class="confirm-btn" id="confirmBtn" disabled onclick="confirmOrder()">确认下单</button>
+    </div>
+
+    <script>
+        // 从sessionStorage获取订单信息
+        const orderInfo = JSON.parse(sessionStorage.getItem('orderInfo'));
+        
+        // 填充订单信息
+        document.getElementById('orderId').textContent = orderInfo.orderId;
+        document.getElementById('customerName').textContent = orderInfo.name;
+        document.getElementById('customerPhone').textContent = orderInfo.phone;
+        document.getElementById('playerName').textContent = orderInfo.playerName;
+        document.getElementById('playerId').textContent = orderInfo.playerId;
+        document.getElementById('modalService').textContent = orderInfo.service;
+        document.getElementById('destination').textContent = orderInfo.destination;
+        document.getElementById('travelDate').textContent = orderInfo.date;
+        document.getElementById('travelTime').textContent = orderInfo.time;
+        document.getElementById('serviceDuration').textContent = orderInfo.duration;
+        document.getElementById('totalPrice').textContent = orderInfo.totalPrice;
+        document.getElementById('idNumber').textContent = orderInfo.idNumber;
+        document.getElementById('venueName').textContent = orderInfo.venueName;
+
+        // 切换确认按钮状态
+        function toggleConfirmButton() {
+            const checkbox = document.getElementById('agreementCheckbox');
+            const confirmBtn = document.getElementById('confirmBtn');
+            confirmBtn.disabled = !checkbox.checked;
+        }
+
+        // 确认下单
+        function confirmOrder() {
+            if (!document.getElementById('agreementCheckbox').checked) {
+                alert('请先阅读并同意相关条款');
+                return;
+            }
+            // 跳转到支付页面
+            window.location.href = 'payment.html';
+        }
+
+        // 添加手势返回功能
+        let touchStartX = 0;
+        let touchEndX = 0;
+        
+        document.addEventListener('touchstart', e => {
+            touchStartX = e.changedTouches[0].screenX;
+        }, false);
+        
+        document.addEventListener('touchend', e => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        }, false);
+        
+        function handleSwipe() {
+            const swipeDistance = touchEndX - touchStartX;
+            const minSwipeDistance = 100;
+            
+            if (swipeDistance > minSwipeDistance) {
+                history.back();
+            }
+        }
+    </script>
+</body>
+</html> 

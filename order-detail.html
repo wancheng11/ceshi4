@@ -1,0 +1,1232 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>订单详情 - 趣玩星球</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #F7F7F7;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 15px;
+        }
+
+        .order-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+        }
+
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .order-id {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .order-label {
+            font-weight: normal;
+            color: #666;
+            font-size: 12px;
+        }
+
+        .order-id strong {
+            font-family: monospace;
+            letter-spacing: 1px;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .order-status {
+            font-size: 14px;
+            font-weight: 500;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+
+        .status-pending {
+            color: #FA9E3B;
+            background: #FFF7E6;
+        }
+
+        .status-completed {
+            color: #52C41A;
+            background: #F6FFED;
+        }
+
+        .status-refunding {
+            color: #1890FF;
+            background: #E6F7FF;
+        }
+
+        .status-refunded {
+            color: #666;
+            background: #F5F5F5;
+        }
+
+        .status-changing {
+            color: #722ED1;
+            background: #F9F0FF;
+        }
+
+        .status-changed {
+            color: #13C2C2;
+            background: #E6FFFB;
+        }
+
+        .countdown {
+            color: #ff4d4f;
+            font-size: 16px;
+            font-weight: 500;
+            margin: 15px 0;
+            text-align: center;
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .info-label {
+            color: #666;
+        }
+
+        .info-value {
+            color: #333;
+            font-weight: 500;
+        }
+
+        .action-buttons {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+        }
+
+        .action-btn {
+            padding: 8px 0;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+
+        .contact-btn {
+            background: #fff;
+            color: #1890ff;
+            border-color: #1890ff;
+        }
+
+        .refund-btn {
+            background: #fff;
+            color: #ff4d4f;
+            border-color: #ff4d4f;
+        }
+
+        .change-btn {
+            background: #fff;
+            color: #722ED1;
+            border-color: #722ED1;
+        }
+
+        .disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .divider {
+            height: 1px;
+            background: #eee;
+            margin: 15px 0;
+        }
+
+        .info-value strong {
+            font-family: monospace;
+            letter-spacing: 1px;
+            color: #333;
+        }
+
+        .status-ongoing {
+            color: #1890ff;
+            background: #e6f7ff;
+        }
+
+        .refund-rules {
+            padding: 15px;
+        }
+
+        .rule-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #f5f5f5;
+            font-size: 14px;
+        }
+
+        .rule-item:last-child {
+            border-bottom: none;
+        }
+
+        .rule-time {
+            color: #666;
+        }
+
+        .rule-fee {
+            color: #ff4d4f;
+            font-weight: 500;
+        }
+
+        .rule-item.warning {
+            color: #ff4d4f;
+            font-weight: 500;
+        }
+
+        .refund-amount {
+            background: #f8f8f8;
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 8px;
+        }
+
+        .amount-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .amount-item:last-child {
+            margin-bottom: 0;
+            padding-top: 10px;
+            border-top: 1px solid #eee;
+        }
+
+        .amount-item.total {
+            font-weight: 500;
+            color: #ff4d4f;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            padding: 15px;
+            gap: 12px;
+            border-top: 1px solid #eee;
+        }
+
+        .cancel-btn, .confirm-btn {
+            padding: 8px 20px;
+            border-radius: 4px;
+            border: none;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .cancel-btn {
+            background: #f5f5f5;
+            color: #666;
+        }
+
+        .confirm-btn {
+            background: #ff4d4f;
+            color: #fff;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-container {
+            background: #fff;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 320px;
+            position: relative;
+            animation: modalShow 0.3s ease;
+        }
+
+        .modal-header {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            text-align: center;
+            position: relative;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            font-size: 16px;
+            color: #333;
+        }
+
+        .modal-close {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 20px;
+            color: #999;
+            cursor: pointer;
+        }
+
+        .modal-content {
+            max-height: 70vh;
+            overflow-y: auto;
+            padding: 15px;
+        }
+
+        .rule-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #f5f5f5;
+            font-size: 14px;
+        }
+
+        .rule-item:last-child {
+            border-bottom: none;
+        }
+
+        .rule-time {
+            color: #666;
+        }
+
+        .rule-fee {
+            color: #ff4d4f;
+            font-weight: 500;
+        }
+
+        .rule-item.warning {
+            color: #ff4d4f;
+        }
+
+        @keyframes modalShow {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .refund-info {
+            padding: 15px;
+        }
+
+        .refund-rule {
+            background: #FFF9F0;
+            border-left: 3px solid #FA9E3B;
+            padding: 15px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .refund-calculation {
+            background: #f8f8f8;
+            border-radius: 8px;
+            padding: 15px;
+        }
+
+        .calc-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .calc-item:last-child {
+            margin-bottom: 0;
+            padding-top: 10px;
+            border-top: 1px solid #eee;
+        }
+
+        .calc-item.total {
+            color: #ff4d4f;
+            font-weight: 500;
+        }
+
+        .amount, .fee, .refund {
+            font-family: monospace;
+            letter-spacing: 1px;
+        }
+
+        /* 添加退票按钮禁用状态的样式 */
+        .refund-btn.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background: #f5f5f5 !important;
+            color: #999 !important;
+            border-color: #ddd !important;
+        }
+
+        /* 修改弹窗样式确保居中显示 */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-container {
+            background: #fff;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 320px;
+            animation: modalShow 0.3s ease;
+        }
+
+        @keyframes modalShow {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            position: relative;
+            padding: 10px;
+        }
+
+        .modal-close {
+            position: absolute;
+            right: 10px;
+            top: 10px;
+            width: 24px;
+            height: 24px;
+            line-height: 24px;
+            text-align: center;
+            font-size: 20px;
+            color: #999;
+            cursor: pointer;
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+        }
+
+        .modal-close:hover {
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .payment-details {
+            padding: 15px 0;
+        }
+
+        .payment-title {
+            font-size: 16px;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 12px;
+        }
+
+        .payment-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .payment-item.total {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #eee;
+            color: #ff4d4f;
+            font-weight: 500;
+        }
+
+        .payment-value {
+            font-family: monospace;
+            letter-spacing: 1px;
+        }
+
+        /* 修改支付总额的样式 */
+        .payment-item.total .payment-value {
+            color: #ff4d4f !important;  /* 红色 */
+            font-weight: bold !important;  /* 加粗 */
+            font-size: 16px !important;  /* 字体大小 */
+        }
+
+        /* 确保支付明细中的值正确显示 */
+        .payment-value {
+            font-family: monospace;
+            letter-spacing: 1px;
+        }
+
+        .payment-item .payment-value {
+            font-family: monospace;
+            letter-spacing: 1px;
+        }
+
+        .payment-item .payment-value strong {
+            font-weight: bold;
+        }
+
+        .change-options {
+            padding: 20px;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .change-option {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background: #f8f8f8;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .change-option:hover {
+            background: #f0f0f0;
+            transform: translateY(-2px);
+        }
+
+        .change-option i {
+            font-size: 24px;
+            color: #722ED1;
+            margin-bottom: 8px;
+        }
+
+        .change-option span {
+            font-size: 14px;
+            color: #333;
+        }
+
+        /* 在 style 标签内添加改签信息容器的样式 */
+        .change-info-container {
+            background: #fff;
+            border-radius: 12px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+
+        .change-info-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .change-info-title {
+            font-size: 16px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .change-info-status {
+            font-size: 14px;
+            color: #722ED1;
+            background: #F9F0FF;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+
+        .change-item {
+            margin-bottom: 12px;
+        }
+
+        .change-label {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 4px;
+            display: block;
+        }
+
+        .change-value {
+            color: #333;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        /* 修改按钮禁用状态的样式 */
+        .action-btn.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background: #f5f5f5 !important;
+            color: #999 !important;
+            border-color: #ddd !important;
+            pointer-events: none;  /* 禁止点击事件 */
+        }
+
+        /* 改签按钮禁用状态样式 */
+        .change-btn.disabled {
+            background: #f5f5f5 !important;
+            color: #999 !important;
+            border-color: #ddd !important;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="order-card">
+            <div class="order-header">
+                <span class="order-id">
+                    <span class="order-label">订单号：</span><strong id="orderId"></strong>
+                </span>
+                <span class="order-status" id="orderStatus"></span>
+            </div>
+
+            <div class="countdown" id="countdown"></div>
+
+            <div class="info-item">
+                <span class="info-label">陪玩项目</span>
+                <span class="info-value" id="service"></span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">陪玩昵称</span>
+                <span class="info-value" id="playerName"></span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">陪玩工号</span>
+                <span class="info-value" id="playerId"></span>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="info-item">
+                <span class="info-label">出行日期</span>
+                <span class="info-value" id="travelDate"></span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">出行时间</span>
+                <span class="info-value" id="travelTime"></span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">服务时长</span>
+                <span class="info-value" id="duration"></span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">目的地</span>
+                <span class="info-value" id="destination"></span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">服务场所</span>
+                <span class="info-value" id="venueName"></span>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="info-item">
+                <span class="info-label">预订人姓名</span>
+                <span class="info-value" id="customerName"></span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">预订人手机</span>
+                <span class="info-value" id="customerPhone"></span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">身份证号码</span>
+                <span class="info-value" id="idNumber"></span>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="payment-details">
+                <div class="payment-title">支付明细</div>
+                <div class="payment-item">
+                    <span class="payment-label">项目费用</span>
+                    <span class="payment-value" id="serviceFee"></span>
+                </div>
+                <div class="payment-item total">
+                    <span class="payment-label">支付总额</span>
+                    <span class="payment-value" id="totalPrice"></span>
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <button class="action-btn contact-btn" onclick="contactService()">联系客服</button>
+                <button class="action-btn refund-btn" id="refundBtn" onclick="applyRefund()">申请退票</button>
+                <button class="action-btn change-btn" id="changeBtn" onclick="applyChange()">申请改签</button>
+            </div>
+
+            <!-- 添加改签信息容器 -->
+            <div class="change-info-container" id="changeInfoContainer" style="display: none;">
+                <div class="change-info-header">
+                    <span class="change-info-title">改签信息</span>
+                    <span class="change-info-status">处理中</span>
+                </div>
+                <div class="change-info-content">
+                    <div class="change-item">
+                        <span class="change-label">原陪玩信息</span>
+                        <div class="change-value" id="originalPlayerInfo"></div>
+                    </div>
+                    <div class="change-item">
+                        <span class="change-label">新陪玩信息</span>
+                        <div class="change-value" id="newPlayerInfo"></div>
+                    </div>
+                    <div class="change-item">
+                        <span class="change-label">改签费用</span>
+                        <div class="change-value" id="changeFee"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 添加退票规则弹窗 -->
+    <div class="modal-overlay" id="refundModal" style="display: none;">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3>退票规则</h3>
+                <span class="modal-close" onclick="closeRefundModal()">×</span>
+            </div>
+            <div class="modal-content">
+                <div class="refund-info">
+                    <div class="refund-rule" id="currentRule">
+                        <!-- 当前退票规则将通过JavaScript动态生成 -->
+                    </div>
+                    <div class="refund-calculation">
+                        <div class="calc-item">
+                            <span>订单金额</span>
+                            <span class="amount" id="orderAmount"></span>
+                        </div>
+                        <div class="calc-item">
+                            <span>手续费</span>
+                            <span class="fee" id="refundFee"></span>
+                        </div>
+                        <div class="calc-item total">
+                            <span>预计退款</span>
+                            <span class="refund" id="refundAmount"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="cancel-btn" onclick="closeRefundModal()">取消</button>
+                <button class="confirm-btn" onclick="confirmRefund()">确认退票</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 添加退票确认弹窗的HTML -->
+    <div class="modal-overlay" id="refundConfirmModal" style="display: none;">
+        <div class="modal-container">
+            <div class="modal-header">
+                <span class="modal-close" onclick="closeRefundConfirmModal()">×</span>
+            </div>
+            <div class="modal-content">
+                <div style="text-align: center; padding: 20px;">
+                    <p style="font-size: 16px; color: #333; margin: 0;">您已提交退票申请，请您耐心等待...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 在 body 标签内，其他弹窗后面添加改签分类弹窗 -->
+    <div class="modal-overlay" id="changeModal" style="display: none;">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3>选择改签类型</h3>
+                <span class="modal-close" onclick="closeChangeModal()">×</span>
+            </div>
+            <div class="modal-content">
+                <div class="change-options">
+                    <div class="change-option" onclick="handleChangeOption('player')">
+                        <i class="fas fa-user"></i>
+                        <span>改陪玩</span>
+                    </div>
+                    <div class="change-option" onclick="handleChangeOption('date')">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>改日期</span>
+                    </div>
+                    <div class="change-option" onclick="handleChangeOption('time')">
+                        <i class="fas fa-clock"></i>
+                        <span>改时间</span>
+                    </div>
+                    <div class="change-option" onclick="handleChangeOption('duration')">
+                        <i class="fas fa-hourglass-half"></i>
+                        <span>加时间</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 底部导航栏 -->
+    <div class="bottom-nav">
+        <a href="index.html" class="nav-item">
+            <i class="fas fa-home"></i>
+            <span>首页</span>
+        </a>
+        <a href="game.html" class="nav-item">
+            <i class="fas fa-gamepad"></i>
+            <span>游戏</span>
+        </a>
+        <a href="forum.html" class="nav-item">
+            <i class="fas fa-comments"></i>
+            <span>论坛</span>
+        </a>
+        <a href="message.html" class="nav-item">
+            <i class="fas fa-comment"></i>
+            <span>消息</span>
+        </a>
+        <a href="profile.html" class="nav-item">
+            <i class="fas fa-user"></i>
+            <span>我的</span>
+        </a>
+    </div>
+
+    <script>
+        // 获取URL参数中的订单ID
+        const urlParams = new URLSearchParams(window.location.search);
+        const orderId = urlParams.get('orderId');
+
+        // 从sessionStorage获取订单详情
+        const orderDetail = JSON.parse(sessionStorage.getItem('currentOrderDetail'));
+
+        // 填充订单信息
+        if (orderDetail) {
+            // 订单号
+            document.getElementById('orderId').textContent = orderDetail.orderId;
+            
+            // 陪玩项目 - 使用 service 而不是 title
+            document.getElementById('service').textContent = orderDetail.service;
+            
+            // 陪玩师信息
+            document.getElementById('playerName').textContent = orderDetail.playerName || '未指定';  // 陪玩师昵称
+            document.getElementById('playerId').textContent = orderDetail.playerId || '未指定';      // 陪玩师工号
+            
+            // 出行信息
+            document.getElementById('travelDate').textContent = orderDetail.travelDate;
+            document.getElementById('travelTime').textContent = orderDetail.travelTime;
+            const durationText = orderDetail.serviceDuration || '未选择';
+            document.getElementById('duration').textContent = durationText.includes('小时') ? durationText : `${durationText}小时`;
+            
+            // 地点信息
+            document.getElementById('destination').textContent = orderDetail.destination;
+            document.getElementById('venueName').textContent = orderDetail.venueName;
+            
+            // 预订人信息
+            document.getElementById('customerName').textContent = orderDetail.booker;
+            document.getElementById('customerPhone').textContent = orderDetail.phone;
+            document.getElementById('idNumber').textContent = orderDetail.idNumber;
+            
+            // 支付明细计算
+            // 显示项目费用和支付总额（使用相同的金额）
+            const totalAmount = orderDetail.totalPrice;  // 从订单信息中获取总价
+            
+            // 显示项目费用
+            document.getElementById('serviceFee').textContent = totalAmount;
+            
+            // 显示支付总额（与项目费用相同）
+            const totalPriceElement = document.getElementById('totalPrice');
+            totalPriceElement.textContent = totalAmount;
+            totalPriceElement.style.color = '#ff4d4f';  // 确保显示红色
+            totalPriceElement.style.fontWeight = 'bold';  // 确保加粗
+        } else {
+            // 如果没有找到订单信息，返回上一页
+            alert('未找到订单信息');
+            history.back();
+        }
+
+        // 修改更新订单状态的函数
+        function updateOrderStatus() {
+            const now = new Date();
+            const [year, month, day] = orderDetail.date.split('-').map(Number);
+            const [hours, minutes] = orderDetail.time.split(':').map(Number);
+            const serviceStartTime = new Date(year, month - 1, day, hours, minutes);
+            const duration = parseInt(orderDetail.duration);
+            const serviceEndTime = new Date(serviceStartTime.getTime() + duration * 60 * 60 * 1000);
+            
+            const statusElem = document.getElementById('orderStatus');
+            const countdownElem = document.getElementById('countdown');
+            const refundBtn = document.getElementById('refundBtn');
+            const changeBtn = document.getElementById('changeBtn');
+
+            // 获取订单历史记录
+            const orders = JSON.parse(localStorage.getItem('orderHistory')) || [];
+            const currentOrder = orders.find(order => order.orderId === orderDetail.orderId);
+
+            // 检查是否在退款中
+            if (currentOrder && currentOrder.refundStatus === 'refunding') {
+                statusElem.textContent = '退款中';
+                statusElem.className = 'order-status status-refunding';
+                countdownElem.style.display = 'none';
+                refundBtn.classList.add('disabled');
+                refundBtn.disabled = true;
+                refundBtn.textContent = '退款中';
+                changeBtn.classList.add('disabled');
+                changeBtn.disabled = true;
+                return;
+            }
+
+            // 其他状态判断
+            if (now < serviceStartTime) {
+                // 服务还未开始
+                const diff = serviceStartTime - now;
+                const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                
+                statusElem.textContent = '待服务';
+                statusElem.className = 'order-status status-pending';
+                countdownElem.style.display = 'block';
+                countdownElem.textContent = `距离出发还有${days}天${hours}小时`;
+                
+                // 服务开始时可以退款和改签
+                refundBtn.classList.remove('disabled');
+                changeBtn.classList.remove('disabled');
+                refundBtn.disabled = false;
+                changeBtn.disabled = false;
+            } else if (now >= serviceStartTime && now < serviceEndTime) {
+                // 服务进行中
+                statusElem.textContent = '服务中';
+                statusElem.className = 'order-status status-ongoing';
+                countdownElem.style.display = 'block';
+                countdownElem.textContent = '订单正在服务中';
+                disableButtons();
+            } else {
+                // 服务已结束
+                statusElem.textContent = '已结束';
+                statusElem.className = 'order-status status-completed';
+                countdownElem.style.display = 'block';
+                countdownElem.textContent = '当前订单服务已结束';
+                disableButtons();
+            }
+        }
+
+        // 计算剩余时间
+        function calculateTimeLeft(dateStr, timeStr) {
+            const [year, month, day] = dateStr.split('-').map(Number);
+            const [h, minutes] = timeStr.split(':').map(Number);
+            const targetDate = new Date(year, month - 1, day, h, minutes);
+            const now = new Date();
+            const diff = targetDate - now;
+
+            if (diff <= 0) return null;
+
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const remainingHours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            return { days, hours: remainingHours };
+        }
+
+        // 联系客服
+        function contactService() {
+            // 保存当前订单信息到 sessionStorage，供客服页面使用
+            const serviceInfo = {
+                orderId: orderDetail.orderId,
+                // 直接从页面元素获取显示的值
+                travelDate: document.getElementById('travelDate').textContent,    // 从页面元素获取出行日期
+                booker: document.getElementById('customerName').textContent,      // 从页面元素获取预订人姓名
+                service: document.getElementById('service').textContent,          // 从页面元素获取陪玩项目
+                time: document.getElementById('travelTime').textContent,         // 从页面元素获取出行时间
+                phone: document.getElementById('customerPhone').textContent      // 从页面元素获取手机号
+            };
+            
+            // 将订单信息存储到 sessionStorage
+            sessionStorage.setItem('serviceInfo', JSON.stringify(serviceInfo));
+            
+            // 跳转到客服页面
+            window.location.href = 'customer-service.html';
+        }
+
+        // 修改计算退票手续费率的函数
+        function calculateRefundFeeRate(serviceStartTime) {
+            const now = new Date();
+            const hoursLeft = (serviceStartTime - now) / (1000 * 60 * 60);
+            
+            if (hoursLeft <= 0) {
+                return { rate: 1, text: "出发后收取100%退票手续费" };
+            } else if (hoursLeft <= 23) {
+                return { rate: 0.5, text: "出发前23-0小时内，收取50%退票手续费" };
+            } else if (hoursLeft <= 35) {
+                return { rate: 0.4, text: "出发前35-24小时内，收取40%退票手续费" };
+            } else if (hoursLeft <= 71) {
+                return { rate: 0.3, text: "出发前71-36小时内，收取30%退票手续费" };
+            } else if (hoursLeft <= 119) {
+                return { rate: 0.2, text: "出发前119-72小时内，收取20%退票手续费" };
+            } else if (hoursLeft <= 135) {
+                return { rate: 0.15, text: "出发前135-120小时内，收取15%退票手续费" };
+            } else {
+                return { rate: 0.1, text: "出发前124-136小时内，收取10%退票手续费" };
+            }
+        }
+
+        // 修改申请退票函数
+        function applyRefund() {
+            if (document.getElementById('refundBtn').classList.contains('disabled')) {
+                alert('当前订单状态不可退票');
+                return;
+            }
+
+            // 获取服务开始时间
+            const [year, month, day] = orderDetail.travelDate.split('-').map(Number);
+            const [hours, minutes] = orderDetail.travelTime.split(':').map(Number);
+            const serviceStartTime = new Date(year, month - 1, day, hours, minutes);
+            const now = new Date();
+            
+            // 计算距离服务开始还有多少小时
+            const hoursLeft = (serviceStartTime - now) / (1000 * 60 * 60);
+            
+            // 计算退票手续费率
+            let feeRate = 0;
+            let feeText = '';
+            
+            if (hoursLeft <= 0) {
+                alert('当前订单已过退票时间');
+                return;
+            } else if (hoursLeft <= 23) {
+                feeRate = 0.5;
+                feeText = "出发前23-0小时内，收取50%退票手续费";
+            } else if (hoursLeft <= 35) {
+                feeRate = 0.4;
+                feeText = "出发前35-24小时内，收取40%退票手续费";
+            } else if (hoursLeft <= 71) {
+                feeRate = 0.3;
+                feeText = "出发前71-36小时内，收取30%退票手续费";
+            } else if (hoursLeft <= 119) {
+                feeRate = 0.2;
+                feeText = "出发前119-72小时内，收取20%退票手续费";
+            } else if (hoursLeft <= 135) {
+                feeRate = 0.15;
+                feeText = "出发前135-120小时内，收取15%退票手续费";
+            } else {
+                feeRate = 0.1;
+                feeText = "出发前136小时以上，收取10%退票手续费";
+            }
+
+            // 获取订单金额（去掉￥符号并转为数字）
+            const orderAmount = parseFloat(orderDetail.totalPrice.replace('￥', ''));
+            
+            // 计算手续费和退款金额
+            const refundFee = orderAmount * feeRate;
+            const refundAmount = orderAmount - refundFee;
+
+            // 更新退票规则弹窗内容
+            document.getElementById('currentRule').textContent = feeText;
+            document.getElementById('orderAmount').textContent = orderDetail.totalPrice;  // 显示订单金额
+            document.getElementById('refundFee').textContent = `￥${refundFee.toFixed(2)}`;  // 显示手续费
+            document.getElementById('refundAmount').textContent = `￥${refundAmount.toFixed(2)}`;  // 显示退款金额
+
+            // 显示退票弹窗
+            document.getElementById('refundModal').style.display = 'flex';
+        }
+
+        // 关闭退票弹窗
+        function closeRefundModal() {
+            document.getElementById('refundModal').style.display = 'none';
+        }
+
+        // 修改确认退票函数
+        function confirmRefund() {
+            // 更新订单状态
+            const orders = JSON.parse(localStorage.getItem('orderHistory')) || [];
+            const updatedOrders = orders.map(order => {
+                if (order.orderId === orderDetail.orderId) {
+                    return {
+                        ...order,
+                        refundStatus: 'refunding',
+                        refundTime: new Date().toISOString()
+                    };
+                }
+                return order;
+            });
+            localStorage.setItem('orderHistory', JSON.stringify(updatedOrders));
+
+            // 更新页面显示
+            const statusElem = document.getElementById('orderStatus');
+            statusElem.textContent = '退款中';
+            statusElem.className = 'order-status status-refunding';
+
+            // 禁用退款和改签按钮
+            disableButtons();
+
+            // 显示确认弹窗
+            document.getElementById('refundConfirmModal').style.display = 'flex';
+
+            // 2秒后自动关闭弹窗并返回上一页
+            setTimeout(() => {
+                closeRefundConfirmModal();
+                history.back();
+            }, 2000);
+        }
+
+        // 添加禁用按钮的函数
+        function disableButtons() {
+            // 禁用退款按钮
+            const refundBtn = document.getElementById('refundBtn');
+            refundBtn.classList.add('disabled');
+            refundBtn.disabled = true;
+            refundBtn.textContent = '退款中';
+
+            // 禁用改签按钮
+            const changeBtn = document.getElementById('changeBtn');
+            changeBtn.classList.add('disabled');
+            changeBtn.disabled = true;
+            changeBtn.style.backgroundColor = '#f5f5f5';
+            changeBtn.style.color = '#999';
+            changeBtn.style.borderColor = '#ddd';
+            changeBtn.style.cursor = 'not-allowed';
+        }
+
+        // 在页面加载时检查退票状态
+        window.addEventListener('load', () => {
+            const orders = JSON.parse(localStorage.getItem('orderHistory')) || [];
+            const currentOrder = orders.find(order => order.orderId === orderDetail.orderId);
+            
+            if (currentOrder && currentOrder.refundStatus === 'refunding') {
+                disableButtons();  // 如果订单在退款中，禁用两个按钮
+            }
+        });
+
+        // 点击遮罩层关闭弹窗
+        document.getElementById('refundConfirmModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeRefundConfirmModal();
+            }
+        });
+
+        // 申请改签
+        function applyChange() {
+            if (document.getElementById('changeBtn').classList.contains('disabled')) {
+                alert('当前订单状态不可改签');
+                return;
+            }
+            // 显示改签选项弹窗
+            document.getElementById('changeModal').style.display = 'flex';
+        }
+
+        // 关闭改签弹窗
+        function closeChangeModal() {
+            document.getElementById('changeModal').style.display = 'none';
+        }
+
+        // 处理改签选项点击
+        function handleChangeOption(type) {
+            let message = '';
+            switch(type) {
+                case 'player':
+                    // 跳转到签陪玩页面
+                    window.location.href = 'change-player.html';
+                    return; // 直接返回，不显示提示信息
+                case 'date':
+                    message = '改日期申请已提交，请等待客服联系';
+                    break;
+                case 'time':
+                    message = '时间申请已提交，请等待客联系';
+                    break;
+                case 'duration':
+                    message = '加时间申请已提交，请等待客服联系';
+                    break;
+            }
+            
+            // 关闭改签选项弹窗
+            closeChangeModal();
+            
+            // 显示提交成功提示
+            alert(message);
+        }
+
+        // 点击遮罩层关闭弹窗
+        document.getElementById('changeModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeChangeModal();
+            }
+        });
+
+        // 加手势返回功能
+        let touchStartX = 0;
+        let touchEndX = 0;
+        
+        document.addEventListener('touchstart', e => {
+            touchStartX = e.changedTouches[0].screenX;
+        }, false);
+        
+        document.addEventListener('touchend', e => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        }, false);
+        
+        function handleSwipe() {
+            const swipeDistance = touchEndX - touchStartX;
+            const minSwipeDistance = 100;
+            
+            if (swipeDistance > minSwipeDistance) {
+                history.back();
+            }
+        }
+
+        // 关闭退票确认弹窗
+        function closeRefundConfirmModal() {
+            document.getElementById('refundConfirmModal').style.display = 'none';
+        }
+
+        // 在页面加载时检查并显示改签信息
+        window.addEventListener('load', () => {
+            // 检查否有改签信息
+            const orderChanges = JSON.parse(localStorage.getItem('orderChanges') || '{}');
+            const changeInfo = orderChanges[orderDetail.orderId];
+            
+            if (changeInfo) {
+                const changeInfoContainer = document.getElementById('changeInfoContainer');
+                const originalPlayerInfo = document.getElementById('originalPlayerInfo');
+                const newPlayerInfo = document.getElementById('newPlayerInfo');
+                const changeFee = document.getElementById('changeFee');
+                
+                originalPlayerInfo.innerHTML = `昵称：${changeInfo.originalPlayer.name}<br>工号：${changeInfo.originalPlayer.id}`;
+                newPlayerInfo.innerHTML = `昵称：${changeInfo.newPlayer.name}<br>工号：${changeInfo.newPlayer.id}`;
+                
+                if (changeInfo.needFee) {
+                    const fee = parseFloat(orderDetail.totalPrice.replace('￥', '')) * 0.15;
+                    changeFee.textContent = `￥${fee.toFixed(2)}`;
+                } else {
+                    changeFee.textContent = '免费';
+                }
+                
+                changeInfoContainer.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html> 

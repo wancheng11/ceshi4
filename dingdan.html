@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>全部订单 - 趣玩星球</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #f5f5f5;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            padding-bottom: 20px;
+        }
+
+        .container {
+            padding: 16px;
+        }
+
+        /* 订单卡片样式 */
+        .order-card {
+            background: white;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            padding: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .order-header {
+            padding-bottom: 12px;
+            border-bottom: none;
+        }
+
+        .order-title {
+            font-size: 16px;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 12px;
+        }
+
+        .order-info {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            font-size: 14px;
+            color: #666;
+            padding-right: 100px;
+        }
+
+        .info-item {
+            padding: 8px 0;
+            border-bottom: none;
+        }
+
+        .info-item:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            color: #999;
+            font-size: 14px;
+        }
+
+        .order-price {
+            text-align: right;
+            padding-top: 12px;
+            font-size: 16px;
+            color: #ff4d4f;
+            font-weight: 500;
+        }
+
+        /* 空订单提示 */
+        .empty-orders {
+            text-align: center;
+            padding: 40px 0;
+            color: #999;
+        }
+
+        .empty-orders i {
+            font-size: 48px;
+            margin-bottom: 16px;
+            color: #ddd;
+        }
+
+        .empty-text {
+            font-size: 14px;
+        }
+
+        /* 手势区域 */
+        .gesture-area {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 20px;
+            height: 100%;
+            z-index: 1000;
+        }
+
+        /* 加订单状态样式 */
+        .order-status {
+            color: #1890ff;
+            font-size: 14px;
+            background: rgba(24, 144, 255, 0.1);
+            padding: 4px 12px;
+            border-radius: 16px;
+            display: inline-block;
+        }
+
+        /* 添加订单操作按钮样式 */
+        .order-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            padding-top: 12px;
+            margin-top: 12px;
+            border-top: none;
+        }
+
+        .order-btn {
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            border: 1px solid #ddd;
+            background: white;
+        }
+
+        .order-btn.primary {
+            background: #1890ff;
+            color: white;
+            border: none;
+        }
+
+        /* 添加订单详情样式 */
+        .order-details {
+            padding: 12px 0;
+        }
+
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .detail-label {
+            color: #999;
+        }
+
+        /* 修改订单号样式 */
+        .order-number {
+            font-family: monospace;
+            letter-spacing: 1px;
+            color: #333;
+            font-weight: bold;
+        }
+
+        /* 加粗"单号"文字 */
+        .order-id-label {
+            font-weight: 500;
+        }
+
+        /* 统一下单时间字体大小 */
+        .order-time {
+            font-size: 14px;
+            color: #666;
+        }
+
+        /* 添加项目名称样式 */
+        .venue-name {
+            font-size: 16px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .order-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        /* 添加新的样式 */
+        .info-row {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+        }
+
+        .info-col {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+
+        .info-item {
+            padding: 8px 0;
+            border-bottom: none;
+        }
+
+        .info-item:last-child {
+            border-bottom: none;
+        }
+
+        .order-time, .game-title {
+            color: #333;
+        }
+
+        /* 调整间距 */
+        .order-info {
+            padding: 0;
+            gap: 0;
+        }
+
+        .info-label {
+            color: #999;
+            min-width: 70px; /* 保证标签对齐 */
+        }
+    </style>
+</head>
+<body>
+    <!-- 手势区域 -->
+    <div class="gesture-area"></div>
+
+    <!-- 订单列表容器 -->
+    <div class="container" id="ordersContainer">
+        <!-- 订单列表将通过 JavaScript 动态生成 -->
+    </div>
+
+    <script>
+        // 获取订单数据
+        function getOrders() {
+            return JSON.parse(localStorage.getItem('orders')) || [];
+        }
+
+        // 初始化页面
+        function initOrdersPage() {
+            const container = document.getElementById('ordersContainer');
+            const orders = JSON.parse(localStorage.getItem('orders')) || [];
+
+            if (orders.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-orders">
+                        <i class="fas fa-file-invoice"></i>
+                        <div class="empty-text">暂无订单</div>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = orders.map((order, index) => `
+                <div class="order-card">
+                    <div class="order-header">
+                        <div class="order-info">
+                            <div class="info-item" style="grid-column: 1 / -1;">
+                                <span class="info-label"><span class="order-id-label">订单号</span>：</span>
+                                <span class="order-number">${order.orderId}</span>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-row">
+                                    <div class="info-col">
+                                        <span class="info-label">预订人：</span>
+                                        <span>${order.booker}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-row">
+                                    <div class="info-col">
+                                        <span class="info-label">陪玩项目：</span>
+                                        <span class="game-title">${order.service}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-row">
+                                    <div class="info-col">
+                                        <span class="info-label">出行日期：</span>
+                                        <span>${order.travelDate}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-row">
+                                    <div class="info-col">
+                                        <span class="info-label">出行时间：</span>
+                                        <span>${order.travelTime}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-row">
+                                    <div class="info-col">
+                                        <span class="info-label">订单状态：</span>
+                                        <span class="order-status">已支付</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="order-price">
+                        ${order.totalPrice}
+                    </div>
+                    <div class="order-actions">
+                        <button class="order-btn" onclick="deleteOrder(${index})">删除订单</button>
+                        <button class="order-btn primary" onclick="viewOrderDetail('${order.orderId}')">查看详情</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // 添加手势返回功能
+        let touchStartX = 0;
+        let touchEndX = 0;
+        
+        document.addEventListener('touchstart', function(event) {
+            touchStartX = event.touches[0].clientX;
+        }, false);
+        
+        document.addEventListener('touchmove', function(event) {
+            touchEndX = event.touches[0].clientX;
+            const swipeDistance = touchEndX - touchStartX;
+            
+            if (touchStartX < 20 && swipeDistance > 50) {
+                window.location.href = 'profile.html';
+            }
+        }, false);
+
+        // 监听 localStorage 变化
+        window.addEventListener('storage', function(e) {
+            if (e.key === 'orders') {
+                initOrdersPage();
+            }
+        });
+
+        // 页面加载时初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            initOrdersPage();
+            // 如果需要测试，可以调用 addTestOrder()
+        });
+
+        // 在页面显示时刷新订单列表
+        document.addEventListener('visibilitychange', function() {
+            if (!document.hidden) {
+                initOrdersPage();
+            }
+        });
+
+        // 添加辅助函数
+        function formatDate(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            const hours = String(date.getHours()).padStart(2, '0');
+            const minutes = String(date.getMinutes()).padStart(2, '0');
+            return `${year}-${month}-${day} ${hours}:${minutes}`;
+        }
+
+        function deleteOrder(index) {
+            if (confirm('确定要删除这条订单记录吗？')) {
+                let orders = getOrders();
+                orders.splice(index, 1);
+                localStorage.setItem('orders', JSON.stringify(orders));
+                initOrdersPage();
+            }
+        }
+
+        // 修改查看订单详情的函数
+        function viewOrderDetail(orderId) {
+            // 获取当前订单的详细信息
+            const orders = getOrders();
+            const currentOrder = orders.find(order => order.orderId === orderId);
+            
+            if (currentOrder) {
+                // 将当前订单信息存储到 sessionStorage，以便在详情页面使用
+                sessionStorage.setItem('currentOrderDetail', JSON.stringify(currentOrder));
+                // 跳转到订单详情页面
+                window.location.href = `order-detail.html?id=${orderId}`;
+            }
+        }
+
+        // 添加测试数据的函数（仅用于测试）
+        function addTestOrder() {
+            const testOrder = {
+                orderId: 'QW20241130096',
+                title: '酒吧狂欢',
+                travelDate: '2024-03-20',
+                travelTime: '14:00',
+                booker: '阿阳哥',
+                price: '99.00',
+                orderTime: new Date().toISOString()
+            };
+
+            let orders = JSON.parse(localStorage.getItem('orders')) || [];
+            orders.unshift(testOrder);
+            localStorage.setItem('orders', JSON.stringify(orders));
+            initOrdersPage();
+        }
+    </script>
+</body>
+</html> 

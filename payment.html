@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>支付订单 - 趣玩星球</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #F7F7F7;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 15px;
+        }
+
+        .order-info {
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+        }
+
+        .order-header {
+            border-bottom: 1px solid #eee;
+            padding-bottom: 15px;
+            margin-bottom: 15px;
+        }
+
+        .order-header h2 {
+            margin: 0;
+            font-size: 18px;
+            color: #333;
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .info-label {
+            color: #666;
+        }
+
+        .info-value {
+            color: #333;
+            font-weight: 500;
+            text-align: right;
+        }
+
+        .price-value {
+            color: #ff4d4f;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .payment-methods {
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .payment-header {
+            margin-bottom: 15px;
+            font-size: 16px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .payment-option {
+            display: flex;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #f5f5f5;
+            cursor: pointer;
+        }
+
+        .payment-option:last-child {
+            border-bottom: none;
+        }
+
+        .payment-icon {
+            width: 28px;
+            height: 28px;
+            margin-right: 12px;
+        }
+
+        .payment-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .payment-name {
+            flex: 1;
+            font-size: 15px;
+            color: #333;
+        }
+
+        .payment-radio {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #ddd;
+            border-radius: 50%;
+            position: relative;
+        }
+
+        .payment-option.selected .payment-radio {
+            border-color: #1890ff;
+        }
+
+        .payment-option.selected .payment-radio::after {
+            content: '';
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: #1890ff;
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .confirm-btn {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: calc(100% - 30px);
+            max-width: 570px;
+            height: 44px;
+            background: linear-gradient(to right, #FA9E3B, #ED4014);
+            border: none;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .order-id {
+            font-family: monospace;
+            letter-spacing: 1px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="order-info">
+            <div class="order-header">
+                <h2>订单信息</h2>
+            </div>
+            <div class="info-item">
+                <span class="info-label">订单号</span>
+                <span class="info-value order-id" id="orderId"></span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">目的地</span>
+                <span class="info-value" id="destination"></span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">预订人姓名</span>
+                <span class="info-value" id="customerName"></span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">预订人手机</span>
+                <span class="info-value" id="customerPhone"></span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">陪玩姓名</span>
+                <span class="info-value" id="playerName"></span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">陪玩工号</span>
+                <span class="info-value" id="playerId"></span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">出行日期</span>
+                <span class="info-value" id="travelDate"></span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">出行时间</span>
+                <span class="info-value" id="travelTime"></span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">服务时长</span>
+                <span class="info-value" id="serviceDuration"></span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">支付金额</span>
+                <span class="info-value price-value" id="totalPrice"></span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">身份证号码</span>
+                <span class="info-value" id="idNumber"></span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">服务场所</span>
+                <span class="info-value" id="venueName"></span>
+            </div>
+        </div>
+
+        <div class="payment-methods">
+            <div class="payment-header">选择支付方式</div>
+            <div class="payment-option" onclick="selectPayment('wechat')">
+                <div class="payment-icon">
+                    <img src="https://s1.imagehub.cc/images/2024/11/29/2699d60592caf58c58e1b5acf50caf26.png" alt="微信支付">
+                </div>
+                <span class="payment-name">微信支付</span>
+                <div class="payment-radio"></div>
+            </div>
+            <div class="payment-option" onclick="selectPayment('alipay')">
+                <div class="payment-icon">
+                    <img src="https://s1.imagehub.cc/images/2024/11/29/f6b0740d41529c96a8352083efb65599.png" alt="支付宝支付">
+                </div>
+                <span class="payment-name">支付宝支付</span>
+                <div class="payment-radio"></div>
+            </div>
+            <div class="payment-option" onclick="selectPayment('quwanbi')">
+                <div class="payment-icon">
+                    <img src="https://s1.imagehub.cc/images/2024/11/29/30c17a0b3d9f8f32dadd84c06fc0134b.png" alt="趣玩币支付">
+                </div>
+                <span class="payment-name">趣玩币支付</span>
+                <div class="payment-radio"></div>
+            </div>
+        </div>
+
+        <button class="confirm-btn" onclick="confirmPayment()">确认支付</button>
+    </div>
+
+    <script>
+        // 从sessionStorage获取订单信息
+        const orderInfo = JSON.parse(sessionStorage.getItem('orderInfo'));
+        
+        // 填充订单信息
+        document.getElementById('orderId').textContent = orderInfo.orderId;
+        document.getElementById('destination').textContent = orderInfo.service;
+        document.getElementById('customerName').textContent = orderInfo.name;
+        document.getElementById('customerPhone').textContent = orderInfo.phone;
+        document.getElementById('playerName').textContent = orderInfo.playerName;
+        document.getElementById('playerId').textContent = orderInfo.playerId;
+        document.getElementById('travelDate').textContent = orderInfo.date;
+        document.getElementById('travelTime').textContent = orderInfo.time;
+        document.getElementById('serviceDuration').textContent = orderInfo.duration;
+
+        // 直接使用 index.html 页面传递过来的预计总价
+        document.getElementById('totalPrice').textContent = orderInfo.totalPrice;  // 使用费用明细中的预计总价
+
+        document.getElementById('idNumber').textContent = orderInfo.idNumber;
+        document.getElementById('venueName').textContent = orderInfo.venueName;
+
+        // 选择支付方式
+        let selectedPayment = '';
+        
+        function selectPayment(method) {
+            selectedPayment = method;
+            document.querySelectorAll('.payment-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            event.currentTarget.classList.add('selected');
+        }
+
+        // 确认支付
+        function confirmPayment() {
+            if (!selectedPayment) {
+                alert('请选择支付方式');
+                return;
+            }
+            
+            // 模拟支付过程
+            const isSuccess = Math.random() > 0.2; // 80%的概率支付成功
+            
+            if (isSuccess) {
+                // 支付成功时保存订单信息
+                onPaymentSuccess();
+                // 跳转到支付结果页面
+                window.location.href = `payment-result.html?status=success`;
+            } else {
+                window.location.href = `payment-result.html?status=fail`;
+            }
+        }
+
+        // 添加手势返回功能
+        let touchStartX = 0;
+        let touchEndX = 0;
+        
+        document.addEventListener('touchstart', e => {
+            touchStartX = e.changedTouches[0].screenX;
+        }, false);
+        
+        document.addEventListener('touchend', e => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        }, false);
+        
+        function handleSwipe() {
+            const swipeDistance = touchEndX - touchStartX;
+            const minSwipeDistance = 100;
+            
+            if (swipeDistance > minSwipeDistance) {
+                history.back();
+            }
+        }
+
+        // 在支付成功时保存订单信息
+        function onPaymentSuccess() {
+            const newOrder = {
+                orderId: orderInfo.orderId,
+                service: orderInfo.service,
+                travelDate: orderInfo.date,
+                travelTime: orderInfo.time,
+                booker: orderInfo.name,
+                servicePrice: orderInfo.servicePrice,
+                transportFee: orderInfo.transportFee,
+                totalPrice: orderInfo.totalPrice,
+                serviceDuration: orderInfo.duration,
+                destination: orderInfo.destination,
+                venueName: orderInfo.venueName,
+                idNumber: orderInfo.idNumber,
+                phone: orderInfo.phone,
+                playerName: document.getElementById('playerName').textContent,  // 陪玩师昵称
+                playerId: document.getElementById('playerId').textContent,      // 陪玩师工号
+                status: '已支付'
+            };
+
+            localStorage.setItem('orders', JSON.stringify([newOrder, ...JSON.parse(localStorage.getItem('orders') || '[]')]));
+            sessionStorage.setItem('currentOrderDetail', JSON.stringify(newOrder));
+        }
+    </script>
+</body>
+</html> 

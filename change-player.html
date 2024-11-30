@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>改签陪玩 - 趣玩星球</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #F7F7F7;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 15px;
+        }
+
+        .order-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .info-label {
+            color: #666;
+        }
+
+        .info-value {
+            color: #333;
+            font-weight: 500;
+        }
+
+        .change-btn {
+            width: 100%;
+            padding: 12px 0;
+            background: #722ED1;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        .change-btn:active {
+            background: #5B25A8;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-container {
+            background: #fff;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 320px;
+            animation: modalShow 0.3s ease;
+        }
+
+        .modal-header {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            font-size: 16px;
+            color: #333;
+            text-align: center;
+        }
+
+        .modal-content {
+            padding: 20px;
+        }
+
+        .player-change-info {
+            margin-bottom: 20px;
+        }
+
+        .player-info {
+            background: #f8f8f8;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+        }
+
+        .player-info-title {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .player-detail {
+            color: #333;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .fee-rules {
+            background: #FFF7E6;
+            border-left: 3px solid #FA9E3B;
+            padding: 12px;
+            font-size: 14px;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .modal-footer {
+            padding: 15px;
+            border-top: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .modal-btn {
+            flex: 1;
+            padding: 10px 0;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .cancel-btn {
+            background: #f5f5f5;
+            color: #666;
+            border: none;
+        }
+
+        .confirm-btn {
+            background: #722ED1;
+            color: #fff;
+            border: none;
+        }
+
+        @keyframes modalShow {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="order-card">
+            <div class="info-item">
+                <span class="info-label">订单号</span>
+                <span class="info-value" id="orderId"></span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">出行日期</span>
+                <span class="info-value" id="travelDate"></span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">出行时间</span>
+                <span class="info-value" id="travelTime"></span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">服务时长</span>
+                <span class="info-value" id="duration"></span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">陪玩昵称</span>
+                <span class="info-value" id="playerName"></span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">陪玩工号</span>
+                <span class="info-value" id="playerId"></span>
+            </div>
+
+            <button class="change-btn" onclick="goToSelectPlayer()">改陪玩</button>
+        </div>
+    </div>
+
+    <!-- 改签确认弹窗 -->
+    <div class="modal-overlay" id="confirmModal">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3>确认更改陪玩</h3>
+            </div>
+            <div class="modal-content">
+                <div class="player-change-info">
+                    <div class="player-info">
+                        <div class="player-info-title">原陪玩信息</div>
+                        <div class="player-detail" id="originalPlayerInfo"></div>
+                    </div>
+                    <div class="player-info">
+                        <div class="player-info-title">新陪玩信息</div>
+                        <div class="player-detail" id="newPlayerInfo"></div>
+                    </div>
+                </div>
+                <div class="fee-rules" id="feeRules"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn cancel-btn" onclick="closeConfirmModal()">取消</button>
+                <button class="modal-btn confirm-btn" onclick="confirmChange()">确认更改</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 从sessionStorage获取订单详情
+        const orderDetail = JSON.parse(sessionStorage.getItem('currentOrderDetail'));
+
+        // 页面加载时填充订单信息
+        window.onload = function() {
+            if (orderDetail) {
+                document.getElementById('orderId').textContent = orderDetail.orderId;
+                document.getElementById('travelDate').textContent = orderDetail.date;
+                document.getElementById('travelTime').textContent = orderDetail.time;
+                document.getElementById('duration').textContent = orderDetail.duration;
+                document.getElementById('playerName').textContent = orderDetail.playerName;
+                document.getElementById('playerId').textContent = orderDetail.playerId;
+            } else {
+                alert('未找到订单信息');
+                history.back();
+            }
+        };
+
+        // 跳转到选择陪玩页面
+        function goToSelectPlayer() {
+            // 保存当前订单信息到sessionStorage
+            sessionStorage.setItem('changeOrderDetail', JSON.stringify(orderDetail));
+            // 跳转到选择陪��页面
+            window.location.href = 'select-player.html';
+        }
+
+        // 从选择陪玩页面返回时显示确认弹窗
+        window.addEventListener('pageshow', function(event) {
+            const newPlayerInfo = sessionStorage.getItem('selectedPlayer');
+            if (newPlayerInfo) {
+                showConfirmModal(JSON.parse(newPlayerInfo));
+            }
+        });
+
+        // 显示确认弹窗
+        function showConfirmModal(newPlayer) {
+            const originalPlayerInfo = `昵称：${orderDetail.playerName}<br>工号：${orderDetail.playerId}`;
+            const newPlayerInfo = `昵称：${newPlayer.name}<br>工号：${newPlayer.id}`;
+            
+            document.getElementById('originalPlayerInfo').innerHTML = originalPlayerInfo;
+            document.getElementById('newPlayerInfo').innerHTML = newPlayerInfo;
+            
+            // 计算费用规则
+            const serviceStartTime = new Date(orderDetail.date + ' ' + orderDetail.time);
+            const now = new Date();
+            const hoursUntilStart = (serviceStartTime - now) / (1000 * 60 * 60);
+            
+            let feeRule = '';
+            if (hoursUntilStart > 8) {
+                feeRule = '距离出发时间大于8小时，免费更改';
+            } else if (hoursUntilStart > 0) {
+                feeRule = '距离出发时间小于8小时，需收取15%手续费';
+            } else {
+                const minutesSinceStart = (now - serviceStartTime) / (1000 * 60);
+                if (minutesSinceStart <= 20) {
+                    feeRule = '出发后20分钟内，免费更改';
+                } else {
+                    feeRule = '出发后20分钟以上，不可更改';
+                }
+            }
+            
+            document.getElementById('feeRules').textContent = feeRule;
+            document.getElementById('confirmModal').style.display = 'flex';
+        }
+
+        // 关闭确认弹窗
+        function closeConfirmModal() {
+            document.getElementById('confirmModal').style.display = 'none';
+            // 清除选择的新陪玩信息
+            sessionStorage.removeItem('selectedPlayer');
+        }
+
+        // 确认更改
+        function confirmChange() {
+            const newPlayer = JSON.parse(sessionStorage.getItem('selectedPlayer'));
+            const serviceStartTime = new Date(orderDetail.date + ' ' + orderDetail.time);
+            const now = new Date();
+            const hoursUntilStart = (serviceStartTime - now) / (1000 * 60 * 60);
+            
+            // 计算是否需要手续费
+            let needFee = false;
+            if (hoursUntilStart <= 8 && hoursUntilStart > 0) {
+                needFee = true;
+            } else if (hoursUntilStart <= 0) {
+                const minutesSinceStart = (now - serviceStartTime) / (1000 * 60);
+                if (minutesSinceStart > 20) {
+                    alert('出发后20分钟以上不可更改');
+                    return;
+                }
+            }
+
+            // 保存改签信息到 localStorage
+            const changeInfo = {
+                orderId: orderDetail.orderId,
+                originalPlayer: {
+                    name: orderDetail.playerName,
+                    id: orderDetail.playerId
+                },
+                newPlayer: {
+                    name: newPlayer.name,
+                    id: newPlayer.id
+                },
+                needFee: needFee,
+                status: 'pending',
+                changeTime: new Date().toISOString()
+            };
+
+            const orderChanges = JSON.parse(localStorage.getItem('orderChanges') || '{}');
+            orderChanges[orderDetail.orderId] = changeInfo;
+            localStorage.setItem('orderChanges', JSON.stringify(orderChanges));
+
+            if (needFee) {
+                // 需要手续费，跳转到支付页面
+                sessionStorage.setItem('changeFeeInfo', JSON.stringify({
+                    orderId: orderDetail.orderId,
+                    fee: parseFloat(orderDetail.totalPrice.replace('￥', '')) * 0.15
+                }));
+                window.location.href = 'payment.html?type=changeFee';
+            } else {
+                // 不需要手续费，直接返回订单详情页
+                alert('更改申请已提交，请等待客服确认');
+                history.back();
+            }
+        }
+    </script>
+</body>
+</html> 

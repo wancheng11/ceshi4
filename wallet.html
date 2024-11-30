@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的钱包 - 趣玩星球</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #f5f5f5;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            overscroll-behavior-x: contain; /* 防止页面水平过度滚动 */
+            touch-action: pan-y pinch-zoom; /* 允许垂直滚动和缩放 */
+            position: relative;
+        }
+
+        .wallet-card {
+            background: linear-gradient(135deg, #1890ff, #36b4ff);
+            margin: 16px;
+            padding: 24px;
+            border-radius: 12px;
+            color: white;
+            margin-top: 20px; /* 由于删除了头部，调整顶部间距 */
+        }
+
+        .balance-title {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 8px;
+        }
+
+        .balance-amount {
+            font-size: 32px;
+            font-weight: 600;
+            margin-bottom: 24px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .recharge-btn {
+            background: #fff;
+            color: #1890ff;
+        }
+
+        .withdraw-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+        }
+
+        /* 弹窗样式 */
+        .modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            width: 90%;
+            max-width: 320px;
+            border-radius: 12px;
+            z-index: 1002;
+            display: none;
+        }
+
+        .modal.show {
+            display: block;
+        }
+
+        .modal-header {
+            padding: 16px;
+            border-bottom: 1px solid #eee;
+            font-size: 18px;
+            font-weight: 500;
+            text-align: center;
+        }
+
+        .modal-content {
+            padding: 20px;
+        }
+
+        .input-group {
+            margin-bottom: 16px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #666;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+
+        .confirm-btn {
+            width: 100%;
+            padding: 12px;
+            background: #1890ff;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            z-index: 1001;
+        }
+
+        .overlay.show {
+            display: block;
+        }
+
+        /* Toast提示样式 */
+        .toast-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            z-index: 2000;
+            display: none;
+        }
+
+        .toast-message.show {
+            display: block;
+            animation: fadeInOut 2s ease;
+        }
+
+        @keyframes fadeInOut {
+            0% { opacity: 0; }
+            20% { opacity: 1; }
+            80% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        /* 添加手势返回相关样式 */
+        .gesture-area {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 20px; /* 左侧边缘检测区域宽度 */
+            height: 100%;
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+    <!-- 添加手势区域 -->
+    <div class="gesture-area"></div>
+
+    <!-- 钱包卡片 -->
+    <div class="wallet-card">
+        <div class="balance-title">账户余额</div>
+        <div class="balance-amount">¥ <span id="balanceAmount">0.00</span></div>
+        <div class="action-buttons">
+            <button class="action-btn recharge-btn" onclick="showRechargeModal()">
+                <i class="fas fa-plus-circle"></i>
+                充值
+            </button>
+            <button class="action-btn withdraw-btn" onclick="showWithdrawModal()">
+                <i class="fas fa-minus-circle"></i>
+                提现
+            </button>
+        </div>
+    </div>
+
+    <!-- 充值弹窗 -->
+    <div class="modal" id="rechargeModal">
+        <div class="modal-header">充值</div>
+        <div class="modal-content">
+            <div class="input-group">
+                <label>充值金额</label>
+                <input type="number" id="rechargeAmount" placeholder="请输入充值金额" min="1">
+            </div>
+            <button class="confirm-btn" onclick="handleRecharge()">确认充值</button>
+        </div>
+    </div>
+
+    <!-- 提现弹窗 -->
+    <div class="modal" id="withdrawModal">
+        <div class="modal-header">提现</div>
+        <div class="modal-content">
+            <div class="input-group">
+                <label>提现金额</label>
+                <input type="number" id="withdrawAmount" placeholder="请输入提现金额" min="1">
+            </div>
+            <button class="confirm-btn" onclick="handleWithdraw()">确认提现</button>
+        </div>
+    </div>
+
+    <!-- 遮罩层 -->
+    <div class="overlay" id="overlay" onclick="closeAllModals()"></div>
+
+    <!-- Toast提示 -->
+    <div class="toast-message" id="toastMessage"></div>
+
+    <script>
+        // 初始化余额
+        let balance = parseFloat(localStorage.getItem('walletBalance')) || 0.00;
+        updateBalanceDisplay();
+
+        // 更新余额显示
+        function updateBalanceDisplay() {
+            document.getElementById('balanceAmount').textContent = balance.toFixed(2);
+            localStorage.setItem('walletBalance', balance.toString());
+        }
+
+        // 显示充值弹窗
+        function showRechargeModal() {
+            document.getElementById('rechargeModal').classList.add('show');
+            document.getElementById('overlay').classList.add('show');
+        }
+
+        // 显示提现弹窗
+        function showWithdrawModal() {
+            document.getElementById('withdrawModal').classList.add('show');
+            document.getElementById('overlay').classList.add('show');
+        }
+
+        // 处理充值
+        function handleRecharge() {
+            const amount = parseFloat(document.getElementById('rechargeAmount').value);
+            if (isNaN(amount) || amount <= 0) {
+                showToast('请输入有效的充值金额');
+                return;
+            }
+            
+            balance += amount;
+            updateBalanceDisplay();
+            closeAllModals();
+            showToast(`充值成功！充值金额：¥${amount.toFixed(2)}`);
+            document.getElementById('rechargeAmount').value = '';
+        }
+
+        // 处理提现
+        function handleWithdraw() {
+            const amount = parseFloat(document.getElementById('withdrawAmount').value);
+            if (isNaN(amount) || amount <= 0) {
+                showToast('请输入有效的提现金额');
+                return;
+            }
+            
+            if (amount > balance) {
+                showToast('余额不足');
+                return;
+            }
+            
+            balance -= amount;
+            updateBalanceDisplay();
+            closeAllModals();
+            showToast(`提现成功！提现金额：¥${amount.toFixed(2)}`);
+            document.getElementById('withdrawAmount').value = '';
+        }
+
+        // 关闭所有弹窗
+        function closeAllModals() {
+            document.getElementById('rechargeModal').classList.remove('show');
+            document.getElementById('withdrawModal').classList.remove('show');
+            document.getElementById('overlay').classList.remove('show');
+        }
+
+        // 显示提示信息
+        function showToast(message) {
+            const toast = document.getElementById('toastMessage');
+            toast.textContent = message;
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2000);
+        }
+
+        // 添加手势返回功能
+        let touchStartX = 0;
+        let touchEndX = 0;
+        
+        document.addEventListener('touchstart', function(event) {
+            touchStartX = event.touches[0].clientX;
+        }, false);
+        
+        document.addEventListener('touchmove', function(event) {
+            touchEndX = event.touches[0].clientX;
+            
+            // 计算滑动距离
+            const swipeDistance = touchEndX - touchStartX;
+            
+            // 如果从左边缘开始滑动，且滑动距离超过50px
+            if (touchStartX < 20 && swipeDistance > 50) {
+                window.location.href = 'profile.html'; // 返回上一页
+            }
+        }, false);
+        
+        // 添加物理返回键监听（Android）
+        window.addEventListener('popstate', function() {
+            window.location.href = 'profile.html';
+        });
+    </script>
+</body>
+</html> 

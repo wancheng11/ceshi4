@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>支付结果 - 趣玩星球</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #F7F7F7;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .result-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .success-icon {
+            width: 60px;
+            height: 60px;
+            margin: 20px auto;
+        }
+
+        .success-icon img {
+            width: 100%;
+            height: 100%;
+        }
+
+        .result-title {
+            font-size: 20px;
+            font-weight: 500;
+            margin: 15px 0;
+            color: #333;
+        }
+
+        .result-title.success {
+            color: #52c41a;
+        }
+
+        .result-title.fail {
+            color: #ff4d4f;
+        }
+
+        .order-info {
+            margin-top: 30px;
+            text-align: left;
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .info-label {
+            color: #666;
+        }
+
+        .info-value {
+            color: #333;
+            font-weight: 500;
+        }
+
+        .retry-btn {
+            width: 100%;
+            height: 44px;
+            background: linear-gradient(to right, #FA9E3B, #ED4014);
+            border: none;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 16px;
+            font-weight: 500;
+            margin-top: 30px;
+            cursor: pointer;
+        }
+
+        .retry-btn:active {
+            opacity: 0.8;
+        }
+
+        .divider {
+            height: 1px;
+            background: #eee;
+            margin: 20px 0;
+        }
+
+        .flow-number {
+            font-family: monospace;
+            letter-spacing: 1px;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 24px;
+            color: #999;
+            cursor: pointer;
+            width: 30px;
+            height: 30px;
+            line-height: 30px;
+            text-align: center;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        .close-btn:hover {
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .success-icon {
+            position: relative;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="result-card" id="successCard" style="display: none;">
+            <div class="success-icon">
+                <img src="https://s1.imagehub.cc/images/2024/11/30/11f4e1d10cce5fd25d813e9ed728871e.png" alt="支付成功">
+            </div>
+            <h2 class="result-title success">支付成功</h2>
+            <div class="order-info">
+                <div class="info-item">
+                    <span class="info-label">订单号</span>
+                    <span class="info-value" id="orderId"></span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">支付流水号</span>
+                    <span class="info-value flow-number" id="flowNumber"></span>
+                </div>
+                <div class="divider"></div>
+                <div class="info-item">
+                    <span class="info-label">陪玩姓名</span>
+                    <span class="info-value" id="playerName"></span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">陪玩工号</span>
+                    <span class="info-value" id="playerId"></span>
+                </div>
+                <div class="divider"></div>
+                <div class="info-item">
+                    <span class="info-label">出行日期</span>
+                    <span class="info-value" id="travelDate"></span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">出行时间</span>
+                    <span class="info-value" id="travelTime"></span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">服务时长</span>
+                    <span class="info-value" id="serviceDuration"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="result-card" id="failCard" style="display: none;">
+            <div class="success-icon">
+                <img src="https://s1.imagehub.cc/images/2024/11/30/a8fc96c89d7021028c8884af874aa37d.png" alt="支付失败">
+            </div>
+            <h2 class="result-title fail">支付失败</h2>
+            <p style="color: #666; margin: 20px 0;">抱歉，您的支付未能完成</p>
+            <button class="retry-btn" onclick="retryPayment()">重新支付</button>
+        </div>
+    </div>
+
+    <script>
+        // 生成随机流水号
+        function generateFlowNumber() {
+            const timestamp = new Date().getTime().toString().slice(-8);
+            const random = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
+            return `FW${timestamp}${random}`;
+        }
+
+        // 从URL参数获取支付状态
+        function getPaymentStatus() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get('status') === 'success';
+        }
+
+        // 显示支付结果
+        function showPaymentResult() {
+            const isSuccess = getPaymentStatus();
+            const orderInfo = JSON.parse(sessionStorage.getItem('orderInfo'));
+
+            if (isSuccess) {
+                document.getElementById('successCard').style.display = 'block';
+                document.getElementById('orderId').textContent = orderInfo.orderId;
+                document.getElementById('flowNumber').textContent = generateFlowNumber();
+                document.getElementById('playerName').textContent = orderInfo.playerName;
+                document.getElementById('playerId').textContent = orderInfo.playerId;
+                document.getElementById('travelDate').textContent = orderInfo.date;
+                document.getElementById('travelTime').textContent = orderInfo.time;
+                document.getElementById('serviceDuration').textContent = orderInfo.duration;
+
+                // 3秒后自动跳转到首页
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 3000);
+            } else {
+                document.getElementById('failCard').style.display = 'block';
+            }
+        }
+
+        // 重新支付
+        function retryPayment() {
+            window.location.href = 'payment.html';
+        }
+
+        // 添加手势返回功能
+        let touchStartX = 0;
+        let touchEndX = 0;
+        
+        document.addEventListener('touchstart', e => {
+            touchStartX = e.changedTouches[0].screenX;
+        }, false);
+        
+        document.addEventListener('touchend', e => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        }, false);
+        
+        function handleSwipe() {
+            const swipeDistance = touchEndX - touchStartX;
+            const minSwipeDistance = 100;
+            
+            if (swipeDistance > minSwipeDistance) {
+                // 保存订单信息到本地存储
+                saveOrderToHistory();
+                // 直接返回首页
+                window.location.href = 'index.html';
+            }
+        }
+
+        // 保存订单到历史记录
+        function saveOrderToHistory() {
+            const isSuccess = getPaymentStatus();
+            const orderInfo = JSON.parse(sessionStorage.getItem('orderInfo'));
+            
+            // 创建订单记录
+            const orderRecord = {
+                ...orderInfo,
+                paymentStatus: isSuccess ? '支付成功' : '支付失败',
+                paymentTime: new Date().toISOString(),
+                flowNumber: isSuccess ? generateFlowNumber() : null
+            };
+
+            // 从本地存储获取现有订单历史
+            let orderHistory = JSON.parse(localStorage.getItem('orderHistory')) || [];
+            
+            // 添加新订单到历史记录
+            orderHistory.unshift(orderRecord); // 添加到开头
+            
+            // 保存更新后的订单历史
+            localStorage.setItem('orderHistory', JSON.stringify(orderHistory));
+        }
+
+        // 页面加载时保存订单
+        window.addEventListener('load', () => {
+            showPaymentResult();
+            saveOrderToHistory();
+        });
+
+        // 添加返回按钮点击事件
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('back-btn')) {
+                window.location.href = 'index.html';
+            }
+        });
+
+        function closeAndReturn() {
+            // 获取订单ID
+            const orderInfo = JSON.parse(sessionStorage.getItem('orderInfo'));
+            // 跳转到订单详情页
+            window.location.href = `order-detail.html?orderId=${orderInfo.orderId}`;
+        }
+    </script>
+</body>
+</html> 

@@ -1,0 +1,1570 @@
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background-color: #f5f5f5;
+    color: #333;
+    overflow-x: hidden;
+}
+
+.container {
+    max-width: 100vw;
+    min-height: 100vh;
+    position: relative;
+    padding-bottom: 60px;
+}
+
+.content-area {
+    padding: 15px;
+    margin-bottom: 60px;
+}
+
+/* 底部导航栏样式 */
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background-color: #ffffff;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    color: #666;
+    font-size: 12px;
+}
+
+.nav-item i {
+    font-size: 20px;
+    margin-bottom: 4px;
+}
+
+.nav-item.active {
+    color: #ff6b6b;
+}
+
+/* 玩家卡片样式 */
+.player-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.player-card {
+    background: white;
+    border-radius: 10px;
+    padding: 15px;
+    text-align: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.player-card img {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    margin-bottom: 10px;
+}
+
+.player-card h3 {
+    font-size: 16px;
+    margin-bottom: 5px;
+}
+
+.player-card p {
+    font-size: 12px;
+    color: #666;
+    margin-bottom: 5px;
+}
+
+.price {
+    color: #ff6b6b;
+    font-weight: bold;
+}
+
+h2 {
+    margin-bottom: 15px;
+    font-size: 20px;
+    color: #333;
+}
+
+/* 功能菜单分类样式 */
+.feature-menu {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    padding: 15px;
+    margin-bottom: 15px;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.feature-item {
+    width: 25%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.feature-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 6px;
+}
+
+.feature-icon i {
+    font-size: 18px;
+    color: white;
+}
+
+.feature-item span {
+    font-size: 11px;
+    color: #333;
+    text-align: center;
+}
+
+/* 修改功能景色样式 */
+.feature-item:nth-child(1) .feature-icon {
+    background: linear-gradient(135deg, #FF6B6B, #FF8E8E); /* 红色系 */
+}
+
+.feature-item:nth-child(2) .feature-icon {
+    background: linear-gradient(135deg, #4FACFE, #00F2FE); /* 蓝色系 */
+}
+
+.feature-item:nth-child(3) .feature-icon {
+    background: linear-gradient(135deg, #43E97B, #38F9D7); /* 绿色系 */
+}
+
+.feature-item:nth-child(4) .feature-icon {
+    background: linear-gradient(135deg, #FA709A, #FEE140); /* 粉黄渐变 */
+}
+
+.feature-item:nth-child(5) .feature-icon {
+    background: linear-gradient(135deg, #6B8DE3, #8693E3); /* 紫蓝色系 */
+}
+
+/* 添加最新活动图标的背景色 */
+.feature-item:nth-child(6) .feature-icon {
+    background: linear-gradient(135deg, #FF9A9E, #FAD0C4); /* 粉色系 */
+}
+
+/* 最新活动样式 */
+.latest-activities {
+    background: #fff;
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 15px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.section-header h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+}
+
+.more-link {
+    color: #666;
+    font-size: 12px;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+}
+
+.more-link i {
+    font-size: 10px;
+    margin-left: 3px;
+}
+
+.activities-container {
+    display: flex;
+    overflow-x: auto;
+    gap: 12px;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+}
+
+.activities-container::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+}
+
+.activity-card {
+    flex: 0 0 280px;
+    background: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.activity-image {
+    position: relative;
+    width: 100%;
+    height: 140px;
+}
+
+.activity-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.activity-tag {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: rgba(255, 107, 107, 0.9);
+    color: #fff;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+}
+
+.activity-info {
+    padding: 12px;
+}
+
+.activity-info h4 {
+    font-size: 14px;
+    margin-bottom: 4px;
+    color: #333;
+}
+
+.activity-info p {
+    font-size: 12px;
+    color: #666;
+    margin-bottom: 6px;
+}
+
+.activity-date {
+    font-size: 11px;
+    color: #999;
+}
+
+/* 搜索区域样式 */
+.search-area {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 15px;
+    padding: 0 5px;
+}
+
+.avatar-container {
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 2px solid #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+}
+
+.avatar-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.search-box {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    background: #fff;
+    border-radius: 20px;
+    padding: 8px 15px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.search-box i {
+    color: #999;
+    margin-right: 8px;
+}
+
+.search-box input {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-size: 14px;
+    color: #333;
+    background: transparent;
+}
+
+.search-box input::placeholder {
+    color: #999;
+}
+
+/* 登录弹窗样式 */
+.login-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+}
+
+.login-container {
+    background: white;
+    width: 85%;
+    max-width: 320px;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    animation: modalShow 0.3s ease;
+}
+
+@keyframes modalShow {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.login-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.login-header h3 {
+    font-size: 18px;
+    color: #333;
+}
+
+.login-header i {
+    font-size: 20px;
+    color: #999;
+    cursor: pointer;
+    padding: 5px;
+}
+
+.input-group {
+    position: relative;
+    margin-bottom: 15px;
+}
+
+.input-group i {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #999;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 12px 12px 12px 35px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.3s;
+}
+
+.input-group input:focus {
+    border-color: #ff6b6b;
+}
+
+.login-btn {
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: opacity 0.3s;
+}
+
+.login-btn:active {
+    opacity: 0.8;
+}
+
+/* 成功提示弹窗样式 */
+.success-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+}
+
+.success-container {
+    background: white;
+    width: 85%;
+    max-width: 280px;
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    animation: modalShow 0.3s ease;
+}
+
+.success-icon {
+    font-size: 48px;
+    color: #52c41a;
+    margin-bottom: 15px;
+}
+
+.success-container h3 {
+    font-size: 18px;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.success-container p {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 20px;
+}
+
+.confirm-btn {
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(135deg, #52c41a, #73d13d);
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: opacity 0.3s;
+}
+
+.confirm-btn:active {
+    opacity: 0.8;
+}
+
+/* 退出确认弹窗样式 */
+.confirm-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+}
+
+.confirm-container {
+    background: white;
+    width: 85%;
+    max-width: 280px;
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    animation: modalShow 0.3s ease;
+}
+
+.confirm-container h3 {
+    font-size: 18px;
+    color: #333;
+    margin-bottom: 15px;
+}
+
+.confirm-container p {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 20px;
+}
+
+.confirm-buttons {
+    display: flex;
+    gap: 12px;
+}
+
+.cancel-btn {
+    flex: 1;
+    padding: 12px;
+    background: #f5f5f5;
+    border: none;
+    border-radius: 8px;
+    color: #666;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: opacity 0.3s;
+}
+
+.confirm-buttons .confirm-btn {
+    flex: 1;
+    background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+}
+
+/* 错误提示弹窗样式 */
+.error-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+}
+
+.error-container {
+    background: white;
+    width: 85%;
+    max-width: 280px;
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    animation: modalShow 0.3s ease;
+}
+
+.error-icon {
+    font-size: 48px;
+    color: #ff4d4f;
+    margin-bottom: 15px;
+}
+
+.error-container h3 {
+    font-size: 18px;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.error-container p {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 20px;
+}
+
+.error-btn {
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(135deg, #ff4d4f, #ff7875);
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: opacity 0.3s;
+}
+
+.error-btn:active {
+    opacity: 0.8;
+}
+
+/* 在错误弹窗样式中添加 */
+.register-link {
+    margin-top: 15px;
+    font-size: 14px;
+    color: #666;
+}
+
+.register-link a {
+    color: #ff6b6b;
+    text-decoration: none;
+    margin-left: 5px;
+}
+
+/* 注册弹窗样式 */
+.register-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+}
+
+.register-container {
+    background: white;
+    width: 85%;
+    max-width: 320px;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    animation: modalShow 0.3s ease;
+}
+
+.register-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.register-header h3 {
+    font-size: 18px;
+    color: #333;
+}
+
+.register-header i {
+    font-size: 20px;
+    color: #999;
+    cursor: pointer;
+    padding: 5px;
+}
+
+.register-btn {
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: opacity 0.3s;
+}
+
+.register-btn:active {
+    opacity: 0.8;
+}
+
+/* 忘记密码链接样式 */
+.forgot-password {
+    margin-top: 10px;
+    font-size: 14px;
+}
+
+.forgot-password a {
+    color: #666;
+    text-decoration: none;
+}
+
+/* 重置密码弹窗样式 */
+.reset-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+}
+
+.reset-container {
+    background: white;
+    width: 85%;
+    max-width: 320px;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    animation: modalShow 0.3s ease;
+}
+
+.reset-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.reset-header h3 {
+    font-size: 18px;
+    color: #333;
+}
+
+.reset-header i {
+    font-size: 20px;
+    color: #999;
+    cursor: pointer;
+    padding: 5px;
+}
+
+.verification-group {
+    position: relative;
+}
+
+.code-btn {
+    position: absolute;
+    right: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+    padding: 6px 12px;
+    background: #f5f5f5;
+    border: none;
+    border-radius: 4px;
+    color: #666;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.code-btn:disabled {
+    background: #eee;
+    color: #999;
+    cursor: not-allowed;
+}
+
+.reset-btn {
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: opacity 0.3s;
+}
+
+.reset-btn:active {
+    opacity: 0.8;
+}
+
+/* 验证码发送成功弹窗样式 */
+.code-success-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1001;
+    align-items: center;
+    justify-content: center;
+}
+
+.code-success-container {
+    background: white;
+    width: 85%;
+    max-width: 280px;
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    animation: modalShow 0.3s ease;
+}
+
+.code-success-container .success-icon {
+    font-size: 48px;
+    color: #4FACFE;
+    margin-bottom: 15px;
+}
+
+.code-success-container h3 {
+    font-size: 18px;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.code-success-container p {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 20px;
+}
+
+.code-confirm-btn {
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(135deg, #4FACFE, #00F2FE);
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: opacity 0.3s;
+}
+
+.code-confirm-btn:active {
+    opacity: 0.8;
+}
+
+/* 我的页面样式 */
+.profile-card {
+    background-image: url('https://s1.imagehub.cc/images/2024/11/29/bc447d3d6496d8080a79451ec0ccd59b.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.profile-header {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.profile-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 2px solid #fff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.profile-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.profile-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.profile-info h3,
+.profile-info span {
+    color: #ffffff;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.user-id {
+    font-size: 14px;
+    color: #666;
+}
+
+.edit-btn {
+    padding: 8px 15px;
+    background: #f5f5f5;
+    border: none;
+    border-radius: 20px;
+    color: #666;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+}
+
+.edit-btn i {
+    font-size: 12px;
+}
+
+.profile-menu {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.menu-section {
+    padding: 15px;
+    border-bottom: 1px solid #f5f5f5;
+}
+
+.menu-section h4 {
+    font-size: 16px;
+    color: #333;
+    margin-bottom: 15px;
+}
+
+.order-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+}
+
+.order-stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+}
+
+.order-stat-item i {
+    font-size: 24px;
+    color: #ff6b6b;
+}
+
+.order-stat-item span {
+    font-size: 12px;
+    color: #666;
+}
+
+.badge {
+    display: none;
+}
+
+.menu-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 15px;
+    background: white;
+    cursor: pointer;
+}
+
+.menu-item i:first-child {
+    font-size: 18px;
+    color: #666;
+    margin-right: 10px;
+}
+
+.menu-item span {
+    flex: 1;
+    font-size: 14px;
+    color: #333;
+}
+
+.menu-item i:last-child {
+    font-size: 12px;
+    color: #999;
+}
+
+/* 编辑资料弹窗样式 */
+.edit-profile-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+}
+
+.edit-profile-container {
+    background: white;
+    width: 90%;
+    max-width: 320px;
+    border-radius: 12px;
+    padding: 20px;
+}
+
+.avatar-upload {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.avatar-upload img {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    margin-bottom: 10px;
+}
+
+.upload-btn {
+    padding: 8px 15px;
+    background: #f5f5f5;
+    border: none;
+    border-radius: 20px;
+    color: #666;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+/* 陪玩认证弹窗样式 */
+.verify-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+}
+
+.verify-container {
+    background: white;
+    width: 90%;
+    max-width: 320px;
+    border-radius: 12px;
+    padding: 20px;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.upload-section {
+    margin: 15px 0;
+}
+
+.upload-section p {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 10px;
+}
+
+.upload-area {
+    display: flex;
+    gap: 10px;
+}
+
+.submit-btn {
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+/* 添加圆形图标样式 */
+.circle-icon {
+    width: 36px;
+    height: 36px;
+    background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 10px;
+}
+
+.circle-icon i {
+    font-size: 16px !important;
+    color: white !important;
+    margin: 0 !important;
+}
+
+/* 修改menu-item样式以适应新的图标 */
+.menu-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 15px;
+    background: white;
+    cursor: pointer;
+}
+
+/* 删除原来的badge样式，因为不再需要 */
+.badge {
+    display: none;
+}
+
+/* 订单状态图标颜色 */
+.order-stat-item:nth-child(1) i {
+    color: #FF6B6B; /* 待付款-红色 */
+}
+
+.order-stat-item:nth-child(2) i {
+    color: #4FACFE; /* 进行中-蓝色 */
+}
+
+.order-stat-item:nth-child(3) i {
+    color: #43E97B; /* 已完成-绿色 */
+}
+
+.order-stat-item:nth-child(4) i {
+    color: #FA709A; /* 待评价-粉色 */
+}
+
+/* 菜单项圆形图标背景色 */
+#allOrdersBtn .circle-icon {
+    background: linear-gradient(135deg, #FF6B6B, #FF8E8E); /* 全部订单-红色渐变 */
+}
+
+#verifyPlaymateBtn .circle-icon {
+    background: linear-gradient(135deg, #4FACFE, #00F2FE); /* 陪玩认证-蓝色渐变 */
+}
+
+#settingsBtn .circle-icon {
+    background: linear-gradient(135deg, #43E97B, #38F9D7); /* 设置-绿色渐变 */
+}
+
+/* 客服按钮样式 */
+.service-btn {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    padding: 8px;
+    background: #f5f5f5;
+    border: none;
+    border-radius: 50%;
+    color: #666;
+    font-size: 16px;
+    cursor: pointer;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* 钱包菜单项样式 */
+.wallet-balance {
+    color: #ff6b6b;
+    font-weight: 500;
+    margin-right: 10px;
+}
+
+/* 钱包弹窗样式 */
+.wallet-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+}
+
+.wallet-container {
+    background: white;
+    width: 90%;
+    max-width: 320px;
+    border-radius: 12px;
+    padding: 20px;
+}
+
+.wallet-balance-card {
+    background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+    padding: 20px;
+    border-radius: 12px;
+    color: white;
+    text-align: center;
+    margin: 15px 0;
+}
+
+.wallet-balance-card p {
+    font-size: 14px;
+    opacity: 0.9;
+}
+
+.wallet-balance-card h2 {
+    font-size: 28px;
+    margin-top: 10px;
+}
+
+.wallet-actions {
+    display: flex;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.wallet-btn {
+    flex: 1;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    cursor: pointer;
+}
+
+.recharge-btn {
+    background: #4FACFE;
+    color: white;
+}
+
+.withdraw-btn {
+    background: #43E97B;
+    color: white;
+}
+
+/* 充值弹窗样式 */
+.amount-options {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin: 15px 0;
+}
+
+.amount-btn {
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: white;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.amount-btn.active {
+    background: #ff6b6b;
+    color: white;
+    border-color: #ff6b6b;
+}
+
+.payment-methods {
+    margin: 20px 0;
+}
+
+.payment-option {
+    display: flex;
+    align-items: center;
+    padding: 10px 0;
+}
+
+.payment-option label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    margin-left: 10px;
+}
+
+.payment-option i {
+    font-size: 20px;
+}
+
+/* 提现弹窗样式 */
+.withdraw-info {
+    background: #f5f5f5;
+    padding: 15px;
+    border-radius: 8px;
+    text-align: center;
+    margin: 15px 0;
+}
+
+.withdraw-methods {
+    margin: 20px 0;
+}
+
+.withdraw-option {
+    display: flex;
+    align-items: center;
+    padding: 10px 0;
+}
+
+.confirm-withdraw-btn, .confirm-recharge-btn {
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+} 
+
+/* 修改用户ID样式 */
+.user-id-container {
+    display: inline-flex;
+    background: linear-gradient(135deg, #4FACFE, #00F2FE);
+    padding: 2px 8px;
+    border-radius: 10px;
+    margin-top: 5px;
+    width: fit-content;
+}
+
+.user-id-container span {
+    font-size: 11px;
+    color: white;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+/* 调整profile-info样式以适应的ID框 */
+.profile-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.profile-info h3 {
+    font-size: 18px;
+    color: #333;
+    margin-bottom: 2px;
+} 
+
+/* 添加钱包和优惠券区域样式 */
+.assets-menu {
+    background: white;
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    display: flex;
+    justify-content: space-around;
+}
+
+.assets-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.assets-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.assets-item:first-child .assets-icon {
+    background: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.assets-item:last-child .assets-icon {
+    background: linear-gradient(135deg, #4FACFE, #00F2FE);
+}
+
+.assets-icon i {
+    font-size: 16px;
+    color: white;
+}
+
+.assets-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.assets-label {
+    font-size: 12px;
+    color: #666;
+}
+
+.assets-value {
+    font-size: 14px;
+    color: #333;
+    font-weight: 500;
+}
+
+/* 删除原来的钱包菜单项样式 */
+#walletBtn {
+    display: none;
+} 
+
+/* 修改用户名和编辑按钮容器样式 */
+.username-container {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* 修改会员图标样式 */
+.member-badge {
+    display: flex;
+    align-items: center;
+}
+
+.member-badge img {
+    width: 16px;
+    height: 16px;
+    object-fit: contain;
+}
+
+/* 未开通会员时的样式 */
+.member-badge.inactive img {
+    filter: grayscale(100%) opacity(0.5);
+}
+
+/* 删除原来的会员等级样式 */
+.member-level {
+    display: none;
+}
+
+/* 修改编辑按钮样式 */
+.edit-menu-btn {
+    display: none;
+}
+
+/* 调整用户名容器样式 */
+.username-container {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* 确保profile-header中的相对定位 */
+.profile-header {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+/* 修改用户名样式 */
+.username-container h3 {
+    color: #ffffff;  /* 默认白色 */
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* 会员用户名样式 */
+.vip-username {
+    color: #FF6B6B !important;  /* 会员红色 */
+    font-weight: 600;
+}
+
+/* 修改三横线菜单按钮样式 */
+.menu-btn {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: none;
+    border: none;
+    padding: 8px;
+    color: #ffffff;
+    font-size: 18px;
+    cursor: pointer;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.menu-btn i {
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* 设置菜单弹窗样式 */
+.settings-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+}
+
+.settings-container {
+    background: white;
+    width: 90%;
+    max-width: 320px;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.settings-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    border-bottom: 1px solid #f5f5f5;
+}
+
+.settings-header h3 {
+    font-size: 18px;
+    color: #333;
+}
+
+.settings-header i {
+    font-size: 20px;
+    color: #999;
+    cursor: pointer;
+}
+
+.settings-menu {
+    padding: 10px 0;
+}
+
+.settings-item {
+    display: flex;
+    align-items: center;
+    padding: 15px 20px;
+    cursor: pointer;
+}
+
+.settings-item:active {
+    background-color: #f5f5f5;
+}
+
+.settings-item i:first-child {
+    font-size: 18px;
+    color: #666;
+    width: 24px;
+    margin-right: 12px;
+}
+
+.settings-item span {
+    flex: 1;
+    font-size: 15px;
+    color: #333;
+}
+
+.settings-item i:last-child {
+    font-size: 12px;
+    color: #999;
+}
+
+/* 删除原来的edit-menu-btn样式 */
+.edit-menu-btn {
+    display: none;
+}
+
+/* 删除原来的settingsBtn相关样式 */
+#settingsBtn {
+    display: none;
+}
+
+/* 修改钱包图标样式 */
+.assets-icon img {
+    width: 20px;  /* 调整图片大小 */
+    height: 20px;
+    object-fit: contain;
+}
+
+/* 移除钱包图标的背景色 */
+.assets-item:first-child .assets-icon {
+    background: none;  /* 移除原来的渐变背景 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

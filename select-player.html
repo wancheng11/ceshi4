@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>选择陪玩 - 趣玩星球</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #F7F7F7;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 15px;
+        }
+
+        /* 陪玩列表 */
+        .player-list {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .player-card {
+            background: #fff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .player-image {
+            width: 100%;
+            height: 200px;
+            position: relative;
+        }
+
+        .player-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .player-info {
+            padding: 12px;
+        }
+
+        .player-name {
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .player-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 8px;
+        }
+
+        .tag {
+            background: #f5f5f5;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .select-btn {
+            width: 100%;
+            padding: 8px 0;
+            background: linear-gradient(to right, #FA9E3B, #ED4014);
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        /* 添加陪玩项目的特殊样式 */
+        #modalService {
+            color: #1890ff !important;  /* 使用蓝色 */
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 陪玩列表 -->
+        <div class="player-list" id="playerList">
+            <!-- 陪玩卡片将通过 JavaScript 动态生成 -->
+        </div>
+    </div>
+
+    <script>
+        // 从 sessionStorage 获取预订信息
+        const bookingInfo = JSON.parse(sessionStorage.getItem('bookingInfo'));
+
+        // 模拟陪玩数据
+        const players = [
+            {
+                id: "PW001",
+                name: "小甜甜",
+                image: "https://s1.imagehub.cc/images/2024/11/26/260383d17e7ad6193503f67267e9be5a.webp",
+                age: 22,
+                height: 168,
+                location: "上海"
+            },
+            {
+                id: "PW002",
+                name: "小可爱",
+                image: "https://s1.imagehub.cc/images/2024/11/26/ff59880100fc22c00902a4db60822a56.webp",
+                age: 23,
+                height: 165,
+                location: "北京"
+            },
+            {
+                id: "PW003",
+                name: "小仙女",
+                image: "https://s1.imagehub.cc/images/2024/11/26/7e24140472b7ab1e9be7d4b9fe82ec89.webp",
+                age: 21,
+                height: 170,
+                location: "广州"
+            },
+            {
+                id: "PW004",
+                name: "小公主",
+                image: "https://s1.imagehub.cc/images/2024/11/26/cc91ad7859152fffed46ae67b00d2029.webp",
+                age: 24,
+                height: 167,
+                location: "深圳"
+            },
+            {
+                id: "PW005",
+                name: "小萌萌",
+                image: "https://s1.imagehub.cc/images/2024/11/26/a90572d9000f5bd4f0ea7055099ef58e.webp",
+                age: 20,
+                height: 166,
+                location: "成都"
+            },
+            {
+                id: "PW006",
+                name: "小美美",
+                image: "https://s1.imagehub.cc/images/2024/11/26/7683840389eb95212c6487fb1d951dae.webp",
+                age: 25,
+                height: 169,
+                location: "杭州"
+            },
+            {
+                id: "PW007",
+                name: "小宝贝",
+                image: "https://s1.imagehub.cc/images/2024/11/26/2521783c857b51383f98cc1bc8fab291.webp",
+                age: 22,
+                height: 172,
+                location: "武汉"
+            },
+            {
+                id: "PW008",
+                name: "小天使",
+                image: "https://s1.imagehub.cc/images/2024/11/26/a95f76d285ea47a029df95a184aebb21.webp",
+                age: 23,
+                height: 171,
+                location: "西安"
+            },
+            {
+                id: "PW009",
+                name: "小乖乖",
+                image: "https://s1.imagehub.cc/images/2024/11/26/f08e3732ddf5472a88f78e2edfab3702.jpeg",
+                age: 21,
+                height: 168,
+                location: "南京"
+            },
+            {
+                id: "PW010",
+                name: "小开心",
+                image: "https://s1.imagehub.cc/images/2024/11/26/3b74c0b1af49d2e5da2263e9e43880dd.webp",
+                age: 24,
+                height: 167,
+                location: "重庆"
+            }
+        ];
+
+        // 生成陪玩列表
+        function generatePlayerList() {
+            const playerList = document.getElementById('playerList');
+            const bookingInfo = JSON.parse(sessionStorage.getItem('bookingInfo'));
+            
+            if (!bookingInfo || !bookingInfo.destination) {
+                playerList.innerHTML = '<div style="text-align: center; padding: 20px;">请先选择目的地</div>';
+                return;
+            }
+
+            const filteredPlayers = players.filter(player => player.location === bookingInfo.destination);
+            
+            if (filteredPlayers.length === 0) {
+                playerList.innerHTML = '<div style="text-align: center; padding: 20px;">该地区暂无可用陪玩</div>';
+                return;
+            }
+
+            playerList.innerHTML = filteredPlayers.map(player => `
+                <div class="player-card">
+                    <div class="player-image">
+                        <img src="${player.image}" alt="${player.name}">
+                    </div>
+                    <div class="player-info">
+                        <div class="player-name">${player.name}</div>
+                        <div class="player-tags">
+                            <span class="tag">${player.location}</span>
+                            <span class="tag">${player.age}岁</span>
+                            <span class="tag">${player.height}cm</span>
+                            <span class="tag">工号:${player.id}</span>
+                        </div>
+                        <button class="select-btn" onclick="showOrderModal('${player.id}', '${player.name}')">
+                            选择
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // 生成随机订单号
+        function generateOrderId() {
+            // 生成4位随机大写字母
+            const letters = Array.from({length: 4}, () => 
+                String.fromCharCode(65 + Math.floor(Math.random() * 26))
+            ).join('');
+            
+            // 生成16位随机数字
+            const numbers = Array.from({length: 16}, () => 
+                Math.floor(Math.random() * 10)
+            ).join('');
+            
+            return letters + numbers;
+        }
+
+        // 添加手势返回功能
+        let touchStartX = 0;
+        let touchEndX = 0;
+        
+        document.addEventListener('touchstart', e => {
+            touchStartX = e.changedTouches[0].screenX;
+        }, false);
+        
+        document.addEventListener('touchend', e => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        }, false);
+        
+        function handleSwipe() {
+            const swipeDistance = touchEndX - touchStartX;
+            const minSwipeDistance = 100; // 最小滑动距离
+            
+            if (swipeDistance > minSwipeDistance) {
+                history.back();
+            }
+        }
+
+        // 修改显示订单确认的函数
+        function showOrderModal(playerId, playerName) {
+            // 保存订单信息
+            const orderInfo = {
+                orderId: generateOrderId(),
+                destination: bookingInfo.destination,
+                name: bookingInfo.name,
+                phone: bookingInfo.phone,
+                playerName: playerName,
+                playerId: playerId,
+                service: bookingInfo.service,
+                date: bookingInfo.date,
+                time: bookingInfo.time,
+                duration: bookingInfo.duration,
+                totalPrice: bookingInfo.totalPrice,
+                idNumber: bookingInfo.idNumber,  // 添加身份证号
+                venueName: bookingInfo.venueName  // 添加服务场所
+            };
+            
+            // 存储订单信息
+            sessionStorage.setItem('orderInfo', JSON.stringify(orderInfo));
+            
+            // 直接跳转到订单核对页面
+            window.location.href = 'order-confirm.html';
+        }
+
+        // 页面加载时生成陪玩列表
+        window.addEventListener('load', () => {
+            // 检查是否有预订信息
+            const bookingInfo = sessionStorage.getItem('bookingInfo');
+            if (!bookingInfo) {
+                alert('请先填写预订信息');
+                window.location.href = 'index.html';
+                return;
+            }
+            
+            generatePlayerList();
+        });
+
+        // 点击遮罩层关闭弹窗
+        document.getElementById('orderModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                hideOrderModal();
+            }
+        });
+    </script>
+</body>
+</html> 

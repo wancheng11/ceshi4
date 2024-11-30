@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>在线客服 - 趣玩星球</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            background: #F6F6F6;
+            margin: 0;
+            padding: 0;
+        }
+
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            background: #F6F6F6;
+        }
+
+        .chat-header {
+            background: #FFFFFF;
+            padding: 12px 16px;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .chat-header h1 {
+            font-size: 17px;
+            font-weight: 500;
+            color: #000;
+            margin: 0;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .system-message {
+            text-align: center;
+            margin: 8px 0;
+        }
+
+        .system-message div {
+            display: inline-block;
+            background: rgba(0, 0, 0, 0.2);
+            color: #FFFFFF;
+            font-size: 13px;
+            padding: 4px 12px;
+            border-radius: 16px;
+        }
+
+        .message {
+            margin-bottom: 16px;
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .message.service {
+            display: flex;
+            align-items: flex-start;
+            margin-right: 60px;
+            margin-bottom: 24px;
+        }
+
+        .message.user {
+            justify-content: flex-end;
+            margin-left: 60px;
+            margin-bottom: 16px;
+        }
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            overflow: hidden;
+            margin-right: 8px;
+            background: #f0f0f0;
+        }
+
+        .avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .message-content {
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 15px;
+            line-height: 1.4;
+            max-width: 100%;
+            position: relative;
+        }
+
+        .service .message-content {
+            background: #FFFFFF;
+            color: #333;
+            border-radius: 0 8px 8px 8px;
+            padding: 4px 12px;
+        }
+
+        .user .message-content {
+            background: #1989FA;
+            color: #FFF;
+            border-radius: 8px 0 8px 8px;
+            padding: 4px 12px 16px;
+            position: relative;
+        }
+
+        .user .message-content .message-time {
+            position: absolute;
+            right: 8px;
+            bottom: 4px;
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.8);
+            line-height: 1;
+            margin: 0;
+            padding: 0;
+        }
+
+        .user .message-content .order-card {
+            margin-bottom: 12px;
+        }
+
+        .chat-input {
+            background: #FFFFFF;
+            padding: 8px 12px;
+            display: flex;
+            align-items: center;
+            border-top: 1px solid #EEEEEE;
+        }
+
+        .input-field {
+            flex: 1;
+            border: none;
+            background: transparent;
+            padding: 8px;
+            font-size: 15px;
+            min-height: 20px;
+            max-height: 80px;
+            line-height: 20px;
+            outline: none;
+            resize: none;
+        }
+
+        .input-field::placeholder {
+            color: #999;
+        }
+
+        .send-btn {
+            padding: 6px 12px;
+            color: #666;
+            border: none;
+            background: transparent;
+            font-size: 15px;
+        }
+
+        .order-card {
+            background: transparent;
+            padding: 8px 0;
+            margin-bottom: 4px;
+            font-size: 14px;
+            line-height: 1.5;
+            color: #333;
+        }
+
+        .order-info > div {
+            margin-bottom: 4px;
+        }
+
+        .order-id {
+            color: #52C41A;
+            font-weight: normal;
+        }
+
+        .service-avatar-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-right: 8px;
+        }
+
+        .service .message-time {
+            font-size: 12px;
+            color: #999;
+            margin-top: 4px;
+        }
+
+        /* 修改订单卡片在用户消息中的样式 */
+        .user .message-content .order-card {
+            background: transparent;
+            border: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .user .message-content .order-info {
+            color: #FFFFFF;
+        }
+
+        .user .message-content .order-info > div {
+            color: #FFFFFF;
+            margin-bottom: 2px;
+        }
+
+        .user .message-content .order-info > div:last-child {
+            margin-bottom: 0;
+        }
+
+        .user .message-content .order-id {
+            color: #FFFFFF;
+            font-weight: normal;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-header">
+            <h1>在线客服</h1>
+        </div>
+        <div class="chat-messages" id="chatMessages">
+            <div class="system-message">
+                <div>智能客服为您服务</div>
+            </div>
+        </div>
+        <div class="chat-input">
+            <div class="input-field" contenteditable="true" id="messageInput" placeholder="输入消息..."></div>
+            <button class="send-btn" onclick="sendMessage()">发送</button>
+        </div>
+    </div>
+
+    <script>
+        // 添加一个全局变量来跟踪当前客服类型
+        let currentServiceType = 'robot'; // 'robot' 或 'human'
+
+        // 修改页面标题的函数
+        function updateServiceTitle(type) {
+            const headerTitle = document.querySelector('.chat-header h1');
+            headerTitle.textContent = type === 'robot' ? '智能客服' : '人工客服';
+            currentServiceType = type;
+        }
+
+        // 添加获取问候语的函数
+        function getGreeting() {
+            const hour = new Date().getHours();
+            if (hour >= 23 || hour < 5) {
+                return "夜深了";
+            } else if (hour >= 5 && hour < 11) {
+                return "早上好";
+            } else if (hour >= 11 && hour < 13) {
+                return "中午好";
+            } else if (hour >= 13 && hour < 18) {
+                return "下午好";
+            } else {
+                return "晚上好";
+            }
+        }
+
+        // 修改页面加载时的初始化代码
+        window.onload = function() {
+            // 设置初始标题为智能客服
+            updateServiceTitle('robot');
+            
+            // 获取订单信息
+            const orderDetail = JSON.parse(sessionStorage.getItem('currentOrderDetail'));
+            
+            // 如果有订单信息，自动发送订单卡片
+            if (orderDetail) {
+                const orderCard = createOrderCard(orderDetail);
+                appendMessage(orderCard, 'user');
+                
+                // 发送欢迎消息，将服务名称用红色显示
+                setTimeout(() => {
+                    const welcomeMessage = `尊敬的${orderDetail.name}，${getGreeting()}！您在<span style="color: #FF0000;">${orderDetail.service}</span>中遇到了什么问题呢？我可以随时为您处理哦~`;
+                    appendMessage(welcomeMessage, 'service');
+                }, 500);
+            }
+        };
+
+        // 修改添加消息到聊天界面的函数
+        function appendMessage(content, type = 'user') {
+            const chatMessages = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}`;
+            
+            if (type === 'user') {
+                // 用户消息
+                const contentDiv = document.createElement('div');
+                contentDiv.className = 'message-content';
+                contentDiv.innerHTML = content;
+                
+                const timeDiv = document.createElement('div');
+                timeDiv.className = 'message-time';
+                timeDiv.textContent = new Date().toLocaleTimeString('zh-CN', { 
+                    hour: '2-digit', 
+                    minute: '2-digit' 
+                });
+                contentDiv.appendChild(timeDiv);
+                messageDiv.appendChild(contentDiv);
+            } else {
+                // 客服消息
+                const avatarContainer = document.createElement('div');
+                avatarContainer.className = 'service-avatar-container';
+                
+                const avatarDiv = document.createElement('div');
+                avatarDiv.className = 'avatar';
+                
+                const avatarImg = document.createElement('img');
+                avatarImg.src = 'https://s1.imagehub.cc/images/2024/11/08/310427fdd306fc5d1aaea5fb94728d50.jpg';
+                avatarImg.alt = '智能客服';
+                avatarDiv.appendChild(avatarImg);
+                
+                const timeDiv = document.createElement('div');
+                timeDiv.className = 'message-time';
+                timeDiv.textContent = new Date().toLocaleTimeString('zh-CN', { 
+                    hour: '2-digit', 
+                    minute: '2-digit' 
+                });
+                
+                avatarContainer.appendChild(avatarDiv);
+                avatarContainer.appendChild(timeDiv);
+                
+                const contentDiv = document.createElement('div');
+                contentDiv.className = 'message-content';
+                contentDiv.innerHTML = content;
+                
+                messageDiv.appendChild(avatarContainer);
+                messageDiv.appendChild(contentDiv);
+            }
+            
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        // 发送消息
+        function sendMessage() {
+            const messageInput = document.getElementById('messageInput');
+            const content = messageInput.innerHTML.trim();
+            
+            if (content) {
+                // 检查是否需要转人工客服
+                if (content === '人工客服') {
+                    if (currentServiceType === 'robot') {
+                        // 第一次输入"人工客服"
+                        appendMessage('请再次输入"人工客服"确认转人工服务', 'service');
+                    } else if (currentServiceType === 'pending') {
+                        // 第二次输入"人工客服"，转人工
+                        updateServiceTitle('human');
+                        appendMessage('已为您转接人工客服，请稍候...', 'service');
+                        setTimeout(() => {
+                            appendMessage('您好，我是客服小美，很高兴为您服务', 'service');
+                        }, 1000);
+                    }
+                    currentServiceType = currentServiceType === 'robot' ? 'pending' : 'human';
+                } else {
+                    appendMessage(content, 'user');
+                }
+                messageInput.innerHTML = '';
+            }
+        }
+
+        // 监听回车键发送消息
+        document.getElementById('messageInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+
+        // 防止页面滑动
+        document.body.addEventListener('touchmove', function(e) {
+            if (e.target.className !== 'chat-messages') {
+                e.preventDefault();
+            }
+        }, { passive: false });
+
+        // 修改创建订单卡片的函数
+        function createOrderCard(order) {
+            return `
+                <div class="order-card">
+                    <div class="order-info" style="color: #FFFFFF;">
+                        <div class="order-id" style="color: #FFFFFF;">订单号：${order.orderId}</div>
+                        <div>陪玩项目：${order.service}</div>
+                        <div>出行日期：${order.date}</div>
+                        <div>预订人：${order.name}</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // 修改HTML中的初始系统消息
+        document.querySelector('.system-message div:last-child').textContent = '智能客服为您服务';
+
+        // 添加手势返回功能
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        document.addEventListener('touchstart', e => {
+            touchStartX = e.changedTouches[0].screenX;
+        }, false);
+
+        document.addEventListener('touchend', e => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        }, false);
+
+        function handleSwipe() {
+            const swipeDistance = touchEndX - touchStartX;
+            const minSwipeDistance = 100; // 最小滑动距离
+            
+            if (swipeDistance > minSwipeDistance) {
+                // 向右滑动超过最小距离，触发返回
+                history.back();
+            }
+        }
+
+        // 防止页面整体滑动，只允许聊天区域滑动
+        document.body.addEventListener('touchmove', function(e) {
+            if (e.target.closest('.chat-messages')) {
+                // 如果是在聊天区域内滑动，允许滑动
+                return;
+            }
+            // 其他区域阻止滑动
+            e.preventDefault();
+        }, { passive: false });
+    </script>
+</body>
+</html> 
